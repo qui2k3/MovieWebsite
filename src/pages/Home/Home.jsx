@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 // import LazyLoad from "react-lazyload";
 
 const getMovies = () => {
@@ -14,7 +16,7 @@ const getMovies = () => {
 };
 const Home = () => {
   const [movies, setMovies] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     getMovies().then((movies) => {
       console.log(movies);
@@ -24,18 +26,19 @@ const Home = () => {
 
   return (
     <div className="bg-[#010810]">
-      <img
+      {/* <img
         src="../../bg-homepage.jpg"
         alt="img-dau"
         className="w-full h-[300px] object-cover"
-      ></img>
+      ></img> */}
       <h2 className="text-[24px] pl-5 text-white font-semibold ">Phim Mới Cập Nhật</h2>
-      <div className="grid grid-cols-5 p-3 gap-5 max-w-6xl mx-auto ">
+      <div className="grid grid-cols-2 md:grid-cols-5 p-3 gap-5 max-w-6xl mx-auto ">
         {movies.length > 0 &&
           movies.map((item, index) => (
             <div
               key={item.id}
-              className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden  "
+              onClick={()=> navigate(`/${item.slug}`)}
+              className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden "
             >
             
                 <img

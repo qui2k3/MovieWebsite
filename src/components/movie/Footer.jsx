@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 
 const Footer = () => {
   return (
-    <footer className="grid grid-cols-3 bg-[#010810] text-white gap-x-10 text-center text-2xl pt-36">
+    <footer className="text-xs md:text-2xl grid grid-cols-2 md:grid-cols-3 bg-[#010810] text-white gap-x-10 text-center  pt-36">
       <div className=" flex flex-col gap-5 justify-start items-center mx-auto">
-        <h2 className="text-center  text-shadow text-4xl">MọtPhim</h2>
+        <h2 className="text-center  text-shadow text-lg md:text-4xl">MọtPhim</h2>
         <img
+        className="max-w-full h-auto"
           src="../../footer-ChungNhan_dathongbao.png"
           alt="ảnh chứng nhận đã thông báo bộ công thương"
         ></img>
         <img
+        className="max-w-full h-auto"
           src="../../footer-ChungNhan_duocbaove.png"
           alt="ảnh chứng nhận được bảo vệ"
         ></img>
@@ -28,7 +30,7 @@ const Footer = () => {
         <p>Liên hệ</p>
         <p>Góp ý</p>
       </div>
-      <div className="col-span-3  border-t-2 border-black p-5">
+      <div className="col-span-2 md:col-span-3  border-t-2 border-black p-5">
         <p>Công ty cổ phần phát triển VT Mobie</p>
         <p>
           Email: trinhnguyennhutqui@gmail.com | Hotline: 0375867539 (miễn phí)

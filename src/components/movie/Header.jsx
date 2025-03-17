@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import Catergory from "./Catergory";
 const ListLink = [
-  {
-    id: 1,
-    to: "/",
-    title: "Phim bộ",
-  },
-  {
-    id: 2,
-    to: "/phimle",
-    title: "Phim lẻ",
-  },
-  {
-    id: 3,
-    to: "/tvshows",
-    title: "TV Shows",
-  },
-  {
-    id: 4,
-    to: "/hoathinh",
-    title: "Hoạt hình",
-  },
+  { id: 1, to: "/", title: "Phim bộ" },
+  { id: 2, to: "/movie", title: "Phim lẻ" },
+  { id: 3, to: "/tvshows", title: "TV Shows" },
+  { id: 4, to: "/hoathinh", title: "Hoạt hình" },
 ];
 const categoryProps = {
   title: "Thể loại",
@@ -54,9 +39,10 @@ const countryProps = {
   title: "Quốc gia",
   genres: ["Trung Quốc", "Hàn Quốc", "Âu Mỹ", "Nhật Bản", "Việt Nam"],
 };
-
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -65,54 +51,84 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   return (
-    <header
-      className={`w-full h-14 flex justify-between items-center z-50 ${
-        isScrolled ? "bg-black fixed" : "absolute"
-      }`}
-    >
-      <div className="flex h-full justify-between items-center font-bold">
-        <a
-          href=""
-          className="flexjustify-between items-center text-[24px] text-white fw-black px-2 "
-        >
-          <NavLink to={"/"}>
-            <h1 className="text-center text-shadow text-4xl">MọtPhim</h1>
-          </NavLink>
-        </a>
-        <div className="relative ml-5">
-          <input
-            className=" h-10 w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
-            placeholder="Tìm kiếm phim, diễn viên"
-          ></input>
-          <div className="absolute w-5 h-5 top-[25%] left-[3%] ">
-            <img src="/search-icon.svg" alt="search-icon"></img>
-          </div>
-        </div>
-      </div>
-      <div>
-        <ul className="flex gap-6 px-5  text-[18px] text-white fw-black text-shadow">
-          <li>
-            <Catergory data={categoryProps}></Catergory>
-          </li>
-          {ListLink.map((item) => {
-            return (
-              <li>
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) => (isActive ? "border-b-2" : "")}
-                >
-                  {item.title}
-                </NavLink>
-              </li>
-            );
-          })}
-          <li>
-            <Catergory data={countryProps}></Catergory>
-          </li>
-        </ul>
-      </div>
-    </header>
+    <>
+      {" "}
+      <header
+        className={`w-full h-auto p-2 flex justify-between items-start z-50 ${
+          isHomePage
+            ? isScrolled
+              ? "bg-black fixed"
+              : "absolute bg-transparent"
+            : isScrolled
+            ? "fixed bg-black"
+            : "bg-black )"
+        } `}
+      >
+        {" "}
+        <div className="flex h-full justify-between items-start pt-1 font-bold">
+          {" "}
+          <a
+            href=""
+            className="flexjustify-between items-center text-[24px] text-white fw-black px-2 "
+          >
+            {" "}
+            <NavLink to={"/"}>
+              {" "}
+              <h1 className="text-center text-shadow text-4xl">MọtPhim</h1>{" "}
+            </NavLink>{" "}
+          </a>{" "}
+          <div className="relative ml-5">
+            {" "}
+            <input
+              className=" h-10 w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
+              placeholder="Tìm kiếm phim, diễn viên"
+            ></input>{" "}
+            <div className="absolute w-5 h-5 top-[25%] left-[3%] ">
+              {" "}
+              <img src="/search-icon.svg" alt="search-icon"></img>{" "}
+            </div>{" "}
+          </div>{" "}
+        </div>{" "}
+        <div>
+          {" "}
+          <ul className="flex gap-6 px-5 text-[18px] text-white fw-black text-shadow">
+            {" "}
+            <li>
+              {" "}
+              <Catergory data={categoryProps}></Catergory>{" "}
+            </li>{" "}
+            {ListLink.map((item) => {
+              return (
+                <li key={item.id}>
+                  {" "}
+                  <NavLink
+                    to={item.to}
+                    className="hover:text-green-400 transition-all duration-200"
+                  >
+                    {" "}
+                    {item.title}{" "}
+                  </NavLink>{" "}
+                </li>
+              );
+            })}{" "}
+            <li>
+              {" "}
+              <Catergory data={countryProps}></Catergory>{" "}
+            </li>{" "}
+          </ul>{" "}
+        </div>{" "}
+      </header>{" "}
+      {location.pathname === "/" && (
+        <section className="banner w-full h-[300px] bg-white">
+          {" "}
+          <img
+            src="../../bg-homepage.jpg"
+            alt="img-dau"
+            className="w-full h-[300px] object-cover"
+          />{" "}
+        </section>
+      )}{" "}
+    </>
   );
 };
-
 export default Header;

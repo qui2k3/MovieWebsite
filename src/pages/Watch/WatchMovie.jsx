@@ -1,11 +1,12 @@
-import React from 'react';
-
+import React from "react";
+import {useParams} from "react-router-dom";
 const WatchMovie = () => {
-    return (
-        <div>
-            đây là trang xem phim
-        </div>
-    );
+    console.log("trang xem phim co slug: ",useParams());
+  return (
+    <div className="bg-purple-300 h-screen text-red-800">
+      <p>trang xem phim</p>
+    </div>
+  );
 };
 
 export default WatchMovie;
