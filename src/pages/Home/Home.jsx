@@ -29,7 +29,7 @@ const Home = () => {
         alt="img-dau"
         className="w-full h-[300px] object-cover"
       ></img>
-      <h2 className="text-[24px] pl-5 text-white font-semibold ">Phim Mới</h2>
+      <h2 className="text-[24px] pl-5 text-white font-semibold ">Phim Mới Cập Nhật</h2>
       <div className="grid grid-cols-5 p-3 gap-5 max-w-6xl mx-auto ">
         {movies.length > 0 &&
           movies.map((item, index) => (

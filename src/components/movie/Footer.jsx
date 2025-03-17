@@ -1,19 +1,9 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 const Footer = () => {
-  // const [movies, setMovies] = useState([]);
-
-  // useEffect(() => {
-  //   getMovies().then((movies) => {
-  //     console.log(movies);
-  //     setMovies(movies);
-  //   });
-  // }, []);
-
   return (
     <footer className="grid grid-cols-3 bg-[#010810] text-white gap-x-10 text-center text-2xl pt-36">
-      <div className=" flex flex-col gap-5 justify-start items-center mx-auto" >
+      <div className=" flex flex-col gap-5 justify-start items-center mx-auto">
         <h2 className="text-center  text-shadow text-4xl">MọtPhim</h2>
         <img
           src="../../footer-ChungNhan_dathongbao.png"
@@ -22,7 +12,6 @@ const Footer = () => {
         <img
           src="../../footer-ChungNhan_duocbaove.png"
           alt="ảnh chứng nhận được bảo vệ"
-          
         ></img>
       </div>
       <div className=" flex flex-col  justify-start items-center">

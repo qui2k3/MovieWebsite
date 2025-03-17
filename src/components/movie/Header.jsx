@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import Catergory from "./Catergory";
 const ListLink = [
   {
     id: 1,
@@ -21,18 +22,38 @@ const ListLink = [
     to: "/hoathinh",
     title: "Hoạt hình",
   },
-  {
-    id: 5,
-    to: "/theloai",
-    title: "Thể loại",
-  },
-  {
-    id: 6,
-    to: "/quocgia",
-    title: "Quốc gia",
-  },
-  
 ];
+const categoryProps = {
+  title: "Thể loại",
+  genres: [
+    "Hành Động",
+    "Cổ Trang",
+    "Chiến Tranh",
+    "Viễn Tưởng",
+    "Kinh Dị",
+    "Tài Liệu",
+    "Bí Ẩn",
+    "Phim 18+",
+    "Tình Cảm",
+    "Tâm Lý",
+    "Thể Thao",
+    "Phiêu Lưu",
+    "Âm Nhạc",
+    "Gia Đình",
+    "Học Đường",
+    "Hài Hước",
+    "Hình Sự",
+    "Võ Thuật",
+    "Khoa Học",
+    "Thần Thoại",
+    "Chính Kịch",
+    "Kinh Điển",
+  ],
+};
+const countryProps = {
+  title: "Quốc gia",
+  genres: ["Trung Quốc", "Hàn Quốc", "Âu Mỹ", "Nhật Bản", "Việt Nam"],
+};
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -54,7 +75,9 @@ const Header = () => {
           href=""
           className="flexjustify-between items-center text-[24px] text-white fw-black px-2 "
         >
-          <h1 className="text-center text-shadow text-4xl">MọtPhim</h1>
+          <NavLink to={"/"}>
+            <h1 className="text-center text-shadow text-4xl">MọtPhim</h1>
+          </NavLink>
         </a>
         <div className="relative ml-5">
           <input
@@ -68,6 +91,9 @@ const Header = () => {
       </div>
       <div>
         <ul className="flex gap-6 px-5  text-[18px] text-white fw-black text-shadow">
+          <li>
+            <Catergory data={categoryProps}></Catergory>
+          </li>
           {ListLink.map((item) => {
             return (
               <li>
@@ -80,6 +106,9 @@ const Header = () => {
               </li>
             );
           })}
+          <li>
+            <Catergory data={countryProps}></Catergory>
+          </li>
         </ul>
       </div>
     </header>
