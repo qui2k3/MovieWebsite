@@ -1,50 +1,66 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import Catergory from "./Catergory";
 import { ListLink, categoryProps, countryProps } from "../../contants/menuData";
-
-// const ListLink = [
-//   { id: 1, to: "/", title: "Phim bộ" },
-//   { id: 2, to: "/movie", title: "Phim lẻ" },
-//   { id: 3, to: "/tvshows", title: "TV Shows" },
-//   { id: 4, to: "/hoathinh", title: "Hoạt hình" },
-// ];
-// const categoryProps = {
-//   title: "Thể loại",
-//   genres: [
-//     "Hành Động",
-//     "Cổ Trang",
-//     "Chiến Tranh",
-//     "Viễn Tưởng",
-//     "Kinh Dị",
-//     "Tài Liệu",
-//     "Bí Ẩn",
-//     "Phim 18+",
-//     "Tình Cảm",
-//     "Tâm Lý",
-//     "Thể Thao",
-//     "Phiêu Lưu",
-//     "Âm Nhạc",
-//     "Gia Đình",
-//     "Học Đường",
-//     "Hài Hước",
-//     "Hình Sự",
-//     "Võ Thuật",
-//     "Khoa Học",
-//     "Thần Thoại",
-//     "Chính Kịch",
-//     "Kinh Điển",
-//   ],
-// };
-// const countryProps = {
-//   title: "Quốc gia",
-//   genres: ["Trung Quốc", "Hàn Quốc", "Âu Mỹ", "Nhật Bản", "Việt Nam"],
-// };
+import useDebounce from "../hooks/useDebounce";
+import axios from "axios";
 const Header = () => {
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [filter, setFilter] = useState("");
+  const filterDebounce = useDebounce(filter, 500);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  // const handleCategoryClick = (genre) => {
+  //   // Chuyển hướng tới BrowseMovie và truyền dữ liệu thể loại qua state
+  //   navigate(`/TongHop/${genre}`, { state: { genre } });
+  // };
+  
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+  const getMovies = () => {
+    const searchUrl = `https://phimapi.com/v1/api/tim-kiem?keyword=${filterDebounce}&page=1`;
+    return axios
+      .get(searchUrl)
+      .then((response) => {
+        // console.log("Kết quả tìm kiếm:", response.data.data.items);
+        return response.data.data.items;
+      })
+      .catch((error) => {
+        console.log("Lỗi khi gọi api", error);
+      });
+  };
+  // const handleGetKeyWordSearch = (e) => {
+  //   console.log(e.target.value);
+  // }
+  // useEffect(() => {
+  //   //neu co filter
+  //   if (filterDebounce) {
+  //     getMovies().then((data) => console.log("Danh sách phim:", data));
+  //   }
+  // }, [filterDebounce]);
+  const [movies, setMovies] = useState([]);
+  // useEffect(() => {
+  //   if (filterDebounce) {
+  //     getMovies().then((data) => {
+  //       console.log("data:", data);
+  //       setMovies(data || []);
+        
+  //     });
+  //     // console.log("name",movies[0]?.name);  đã lấy được tên phim
+  //   }
+  // }, [filterDebounce]);
+  useEffect(() => {
+    if (filterDebounce.trim()) {
+      getMovies().then((data) => {
+        console.log("Danh sách phim:", data);
+        setMovies(data || []); // Lưu kết quả tìm kiếm
+      });
+    }
+  }, [filterDebounce]);
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -52,6 +68,13 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  // "/TongHop/tv-shows"
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && movies.length > 0) {
+      navigate(`/TongHop/${filter}`, { state: { filter } }); // Chuyển hướng và truyền dữ liệu
+    }
+  };
+  
   return (
     <>
       <header
@@ -77,7 +100,10 @@ const Header = () => {
           <div className="relative ml-5">
             <input
               className=" h-10 w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
-              placeholder="Tìm kiếm phim, diễn viên"
+              placeholder="Tìm kiếm phim"
+              value={filter}
+              onChange={handleFilterChange}
+              onKeyDown={handleKeyPress}
             ></input>
             <div className="absolute w-5 h-5 top-[25%] left-[3%] ">
               <img src="/search-icon.svg" alt="search-icon"></img>
@@ -87,7 +113,7 @@ const Header = () => {
         <div>
           <ul className="flex gap-6 px-5 text-[18px] text-white fw-black text-shadow">
             <li>
-              <Catergory data={categoryProps}></Catergory>
+              <Catergory data={categoryProps} ></Catergory>
             </li>
             {ListLink.map((item) => {
               return (
@@ -115,16 +141,18 @@ const Header = () => {
               alt="img-dau"
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-5 left-[13%]  w-max text-white">
-              <h2 className="font-bold text-3xl mb-5">Avengers: Endgame</h2>
-              <div className="flex font-semibold items-center gap-x-3 mb-8">
+            <div className="absolute inset-0 flex items-center justify-center text-white ">
+              <h2 className="font-bold text-[55px] mb-5 w-[470px] text-center">
+                Phim, series không giới hạn và nhiều nội dung khác
+              </h2>
+              {/* <div className="flex font-semibold items-center gap-x-3 mb-8">
                 <span className="py-2 px-4 border border-white rounded-md">
                   Hành động
                 </span>
               </div>
               <button className="py-3 px-6 rounded-lg text-white font-semibold bg-pink-600">
                 Xem Ngay
-              </button>
+              </button> */}
             </div>
           </div>
         </section>

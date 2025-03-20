@@ -4,6 +4,7 @@ import Header from "./components/movie/Header";
 import MovieDetails from "./pages/MovieDetail/MovieDetails";
 import WatchMovie from "./pages/Watch/WatchMovie";
 import Home from "./pages/Home/Home";
+import BrowseMovie from "./pages/BrowseMovie/BrowseMovie";
 
 const App = () => {
   return (
@@ -11,8 +12,9 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/:slug" element={<MovieDetails />} />
-        <Route path="/:slug/:episodes" element={<WatchMovie />} />
+        <Route path="/TongHop/:tongHop" element={<BrowseMovie />} />
+        <Route path="/DangXemThongTinPhim/:movieSlug" element={<MovieDetails />} />
+        <Route path="/DangXemTap/:movieSlug/:episodeSlug" element={<WatchMovie />} />
       </Routes>
       <Footer />
     </>

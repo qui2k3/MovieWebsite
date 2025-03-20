@@ -26,7 +26,10 @@ const Catergory = (props) => {
       >
         {genres.map((genre, index) => (
           <div key={index} className="py-1 cursor-pointer">
-            <div className="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-900">
+            <div
+              className="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-900"
+              // onClick={() => handleCategoryClick(genre)}
+            >
               {genre}
             </div>
           </div>
