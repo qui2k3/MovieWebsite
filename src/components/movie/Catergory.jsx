@@ -15,12 +15,13 @@ const Catergory = (props) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <span className="inline-block w-[78px] h-[28px] text-center gap-x-1.5 font-semibold shadow-xs outline-none text-[18px] text-white font-sans fw-black text-shadow bg-transparent cursor-pointer">
+      <span className={`inline-block w-[78px] h-[28px] text-center gap-x-1.5 font-semibold shadow-xs outline-none text-[18px] text-white font-sans fw-black text-shadow bg-transparent cursor-pointer
+       ${isOpen ? "text-green-400" : "text-white"}`}>
         {title}
       </span>
       <div
-        className={`absolute bg-transparent -mt-1 grid grid-cols-3 right-0 z-10 w-96 origin-top-right rounded-md  shadow-lg ring-1 ring-black/5 backdrop-blur-md transition ${
-          isOpen ? "block" : "hidden"
+        className={`absolute bg-transparent -mt-1 grid grid-cols-3 right-0 z-10 w-96 origin-top-right rounded-md  shadow-lg ring-1 ring-black/5 backdrop-blur-md transition-opacity duration-700 ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onMouseLeave={handleMouseLeave}
       >

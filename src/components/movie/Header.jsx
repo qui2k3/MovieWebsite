@@ -16,7 +16,7 @@ const Header = () => {
   //   // Chuyển hướng tới BrowseMovie và truyền dữ liệu thể loại qua state
   //   navigate(`/TongHop/${genre}`, { state: { genre } });
   // };
-  
+
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
@@ -47,7 +47,7 @@ const Header = () => {
   //     getMovies().then((data) => {
   //       console.log("data:", data);
   //       setMovies(data || []);
-        
+
   //     });
   //     // console.log("name",movies[0]?.name);  đã lấy được tên phim
   //   }
@@ -60,7 +60,7 @@ const Header = () => {
       });
     }
   }, [filterDebounce]);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -74,7 +74,7 @@ const Header = () => {
       navigate(`/TongHop/${filter}`, { state: { filter } }); // Chuyển hướng và truyền dữ liệu
     }
   };
-  
+
   return (
     <>
       <header
@@ -91,7 +91,7 @@ const Header = () => {
         <div className="flex h-full justify-between items-start pt-1 font-bold">
           <a
             href=""
-            className="flexjustify-between items-center text-[24px] text-white fw-black px-2 "
+            className="flex justify-between items-center text-[24px] text-white fw-black px-2 "
           >
             <NavLink to={"/"}>
               <h1 className="text-center text-shadow text-4xl">MọtPhim</h1>
@@ -111,9 +111,12 @@ const Header = () => {
           </div>
         </div>
         <div>
-          <ul className="flex gap-6 px-5 text-[18px] text-white fw-black text-shadow">
+          <ul className="flex items-baseline gap-6 px-5 text-[18px] text-white fw-black text-shadow">
             <li>
-              <Catergory data={categoryProps} ></Catergory>
+              <Catergory data={categoryProps}></Catergory>
+            </li>
+            <li>
+              <Catergory data={countryProps}></Catergory>
             </li>
             {ListLink.map((item) => {
               return (
@@ -127,9 +130,6 @@ const Header = () => {
                 </li>
               );
             })}
-            <li>
-              <Catergory data={countryProps}></Catergory>
-            </li>
           </ul>
         </div>
       </header>

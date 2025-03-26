@@ -3,6 +3,7 @@ export const ListLink = [
   { id: 2, to: "/TongHop/phim-le", title: "Phim lẻ" },
   { id: 3, to: "/TongHop/tv-shows", title: "TV Shows" },
   { id: 4, to: "/TongHop/hoat-hinh", title: "Hoạt hình" },
+  { id: 5, to: "/TongHop/hoat-hinh", title: "Đăng nhập" },
 ];
 export const categoryProps = {
   title: "Thể loại",
