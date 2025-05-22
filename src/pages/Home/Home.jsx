@@ -88,7 +88,13 @@ const Home = () => {
         <Swiper
           grabCursor={true} // Cho phép người dùng kéo slider
           spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={5} // Số slide hiển thị cùng lúc
+          slidesPerView={2} // Số slide hiển thị cùng lúc
+          breakpoints={{
+    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
+    1024: {
+      slidesPerView: 5,      // Hiển thị 5 slide
+    },
+  }}
           // navigation // Nút điều hướng
           // pagination={{ clickable: true }} // Hiển thị phân trang
           // autoplay={{ delay: 3000 }} // Tự động chuyển slide
@@ -110,7 +116,13 @@ const Home = () => {
         <Swiper
           grabCursor={true} // Cho phép người dùng kéo slider
           spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={5} // Số slide hiển thị cùng lúc
+          slidesPerView={2} // Số slide hiển thị cùng lúc
+          breakpoints={{
+    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
+    1024: {
+      slidesPerView: 5,      // Hiển thị 5 slide
+    },
+  }}
           // navigation // Nút điều hướng
           // pagination={{ clickable: true }} // Hiển thị phân trang
           // autoplay={{ delay: 3000 }} // Tự động chuyển slide
@@ -132,7 +144,13 @@ const Home = () => {
         <Swiper
           grabCursor={true} // Cho phép người dùng kéo slider
           spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={5} // Số slide hiển thị cùng lúc
+          slidesPerView={2} // Số slide hiển thị cùng lúc
+          breakpoints={{
+    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
+    1024: {
+      slidesPerView: 5,      // Hiển thị 5 slide
+    },
+  }}
           // navigation // Nút điều hướng
           // pagination={{ clickable: true }} // Hiển thị phân trang
           // autoplay={{ delay: 3000 }} // Tự động chuyển slide
@@ -153,7 +171,13 @@ const Home = () => {
         <Swiper
           grabCursor={true} // Cho phép người dùng kéo slider
           spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={5} // Số slide hiển thị cùng lúc
+          slidesPerView={2} // Số slide hiển thị cùng lúc
+          breakpoints={{
+    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
+    1024: {
+      slidesPerView: 5,      // Hiển thị 5 slide
+    },
+  }}
           // navigation // Nút điều hướng
           // pagination={{ clickable: true }} // Hiển thị phân trang
           // autoplay={{ delay: 3000 }} // Tự động chuyển slide
