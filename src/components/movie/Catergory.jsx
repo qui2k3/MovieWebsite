@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 const Catergory = (props) => {
-  const { title, genres } = props.data;
+  const { title, genres }  = props.data;
   const [isOpen, setIsOpen] = useState(false);
 
   const handleMouseEnter = () => setIsOpen(true);
@@ -30,6 +30,7 @@ const Catergory = (props) => {
             <div
               className="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-900"
               // onClick={() => handleCategoryClick(genre)}
+              // chuyển hướng khi click vào dropdown thể loại
             >
               {genre}
             </div>
