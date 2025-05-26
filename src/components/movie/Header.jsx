@@ -18,8 +18,17 @@ const Header = () => {
   // };
 
   const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
+  const value = e.target.value;
+
+  // Chỉ cho phép chữ cái có dấu, số và khoảng trắng
+  const sanitizedValue = value.replace(/[^a-zA-Z0-9À-ỹ\s]/g, ""); 
+
+  setFilter(sanitizedValue); // Cập nhật state với giá trị hợp lệ
+};
+
+
+
+
   const getMovies = () => {
     const searchUrl = `https://phimapi.com/v1/api/tim-kiem?keyword=${filterDebounce}&page=1`;
     return axios
@@ -102,7 +111,7 @@ const Header = () => {
               className=" h-10 w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
               placeholder="Tìm kiếm phim"
               value={filter}
-              onChange={handleFilterChange}
+              onInput={handleFilterChange}
               onKeyDown={handleKeyPress}
             ></input>
             <div className="absolute w-5 h-5 top-[25%] left-[3%] ">

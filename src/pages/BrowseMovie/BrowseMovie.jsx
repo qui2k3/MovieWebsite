@@ -50,7 +50,7 @@ const BrowseMovie = () => {
   }, [tongHop, moviesFromSerch]); // Thêm moviesFromSerch vào mảng phụ thuộc
 
   return (
-    <div className="grid grid-cols-5 p-5 gap-5 max-w-full mx-auto bg-[#010810]">
+    <div className="grid grid-cols-2 lg:grid-cols-5 p-5 gap-5 max-w-full mx-auto bg-[#010810]">
       {movies.length > 0 &&
         movies.map((item) => (
           <div
