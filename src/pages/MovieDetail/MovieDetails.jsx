@@ -64,7 +64,7 @@ const MovieDetails = () => {
               >
                 <img
                   src={movieDetail.poster_url}
-                  className="w-full  h-full object-cover"
+                  className="w-full aspect-[2/3] h-full object-cover"
                 ></img>
                 <div className="absolute bottom-0 -translate-y-full w-full h-[50px] flex flex-col justify-center items-center text-center text-white  leading-4 bg-[#da2511] bg-opacity-60  ">
                   <span className="block text-center font-semibold w-full">
