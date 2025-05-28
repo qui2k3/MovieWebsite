@@ -9,6 +9,7 @@ const WatchMovie = () => {
 
   const [episodeList, setEpisodeList] = useState([]);
   const [movieDetail, setMovieDetail] = useState({});
+  const [movieName, setMovieName] = useState("");
   const [curentEpisodeSlug, setCurentEpisodeSlug] = useState("");
   const [indexArrServer_data, setIndexArrServer_data] = useState(0);
 
@@ -17,8 +18,10 @@ const WatchMovie = () => {
     axios.get(`https://phimapi.com/phim/${movieSlug}`).then((response) => {
       const movie = response.data.movie || {};
       const episodes = response.data.episodes || [];
+      const name = response.data.movie.name || "";
       setMovieDetail(movie);
       setEpisodeList(episodes);
+      setMovieName(name);
 
       // Đặt tập mặc định
       if (episodes.length > 0 && episodes[0]?.server_data?.length > 0) {
@@ -40,11 +43,14 @@ const WatchMovie = () => {
   // Xử lý click vào tập
   const handleEpisodeClick = (slug, index) => {
     setIndexArrServer_data(index); // Cập nhật chỉ mục tập
-    navigate(`/DangXemTap/${movieSlug}/${slug}`); // Điều hướng đến tập mới
+    navigate(`/xem-phim/${movieSlug}/${slug}`); // Điều hướng đến tập mới
   };
 
   return (
     <div className="bg-[#010810] text-white">
+      <div className="text-[22px] font-semibold p-2 ml-10">
+       <h2>Xem Phim {movieName}</h2>
+      </div>
       {/* Hiển thị video */}
       <VideoPlayer link={curentEpisodeSlug} />
 

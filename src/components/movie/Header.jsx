@@ -77,24 +77,24 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  // "/TongHop/tv-shows"
+  
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && movies.length > 0) {
-      navigate(`/TongHop/${filter}`, { state: { filter } }); // Chuyển hướng và truyền dữ liệu
+      navigate(`/tim-kiem/${filter}`, { state: { filter } }); // Chuyển hướng và truyền dữ liệu
     }
   };
 
   return (
     <>
       <header
-        className={`w-full h-auto p-2 flex justify-between items-start z-50 ${
+        className={`w-full bg-black h-auto p-2 flex flex-col lg:flex-row justify-between items-start z-50 ${
           isHomePage
             ? isScrolled
               ? "bg-black fixed"
-              : "absolute bg-transparent"
+              : "lg:absolute lg:bg-transparent"
             : isScrolled
-            ? "fixed bg-black"
-            : "bg-black )"
+              ? "fixed bg-black"
+              : "bg-black "
         } `}
       >
         <div className="flex h-full justify-between items-start pt-1 font-bold">
@@ -151,17 +151,9 @@ const Header = () => {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 flex items-center justify-center text-white ">
-              <h2 className="font-bold text-[55px] mb-5 w-[470px] text-center">
+              <h2 className="font-bold text-[32px] lg:text-[55px] mb-5 w-[470px] text-center">
                 Phim, series không giới hạn và nhiều nội dung khác
               </h2>
-              {/* <div className="flex font-semibold items-center gap-x-3 mb-8">
-                <span className="py-2 px-4 border border-white rounded-md">
-                  Hành động
-                </span>
-              </div>
-              <button className="py-3 px-6 rounded-lg text-white font-semibold bg-pink-600">
-                Xem Ngay
-              </button> */}
             </div>
           </div>
         </section>

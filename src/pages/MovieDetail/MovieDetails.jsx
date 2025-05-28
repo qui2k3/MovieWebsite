@@ -38,7 +38,7 @@ const MovieDetails = () => {
     // chua co episodeSlug
     if (episodeSlug) {
       console.log(episodeSlug);
-      navigate(`/DangXemTap/${movieSlug}/${episodeSlug}`, {
+      navigate(`/xem-phim/${movieSlug}/${episodeSlug}`, {
         state: {
           episodeList: episodeList,
           movieDetail: movieDetail,
@@ -50,7 +50,7 @@ const MovieDetails = () => {
     console.log("clicked");
   };
   return (
-    <div className="text-red-400 bg-[#010810]   max-w-full pt-8">
+    <div className="text-red-400 bg-[#010810] max-w-full pt-8">
       <div className="flex flex-col">
         {movieDetail ? (
           <>

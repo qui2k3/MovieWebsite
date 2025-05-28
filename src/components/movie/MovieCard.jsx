@@ -6,7 +6,7 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest }) => {
 
   return (
     <div
-      onClick={() => navigate(`/DangXemThongTinPhim/${movie.slug}`)}
+      onClick={() => navigate(`/phim/${movie.slug}`)}
       className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden"
     >
       <img

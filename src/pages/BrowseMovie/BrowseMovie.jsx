@@ -55,7 +55,7 @@ const BrowseMovie = () => {
         movies.map((item) => (
           <div
             key={item.id}
-            onClick={() => navigate(`/DangXemThongTinPhim/${item.slug}`)}
+            onClick={() => navigate(`/phim/${item.slug}`)}
             className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden"
           >
             <img
