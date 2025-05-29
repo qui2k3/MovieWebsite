@@ -1,9 +1,9 @@
 export const ListLink = [
-  { id: 1, to: "/TongHop/phim-bo", title: "Phim bộ" },
-  { id: 2, to: "/TongHop/phim-le", title: "Phim lẻ" },
-  { id: 3, to: "/TongHop/tv-shows", title: "TV Shows" },
-  { id: 4, to: "/TongHop/hoat-hinh", title: "Hoạt hình" },
-  { id: 5, to: "/TongHop/hoat-hinh", title: "Đăng nhập" },
+  { id: 1, to: "/phim-bo", title: "Phim bộ" },
+  { id: 2, to: "/phim-le", title: "Phim lẻ" },
+  { id: 3, to: "/tv-shows", title: "TV Shows" },
+  { id: 4, to: "/hoat-hinh", title: "Hoạt hình" },
+  { id: 5, to: "/dang-nhap", title: "Đăng nhập" },
 ];
 export const categoryProps = {
   title: "Thể loại",

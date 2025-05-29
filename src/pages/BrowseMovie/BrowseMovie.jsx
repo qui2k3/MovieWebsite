@@ -1,73 +1,81 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
-const BrowseMovie = () => {
-  const navigate = useNavigate();
+const BrowseMovie = ({ type }) => {
+  const { genre, country } = useParams();
   const location = useLocation();
-  const moviesFromSerch = location.state?.filter || ""; // Sử dụng "" thay vì []
-  const { tongHop = "phim-bo" } = useParams();
+  const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
-  const [nextPage, setNextPage] = useState(1);
-
-  const getMovies = () => {
-    if (moviesFromSerch && moviesFromSerch.trim() !== "") {
-      // Gọi API tìm kiếm nếu có từ khóa
-      return axios
-        .get(
-          `https://phimapi.com/v1/api/tim-kiem?keyword=${moviesFromSerch}&page=1&sort_field=_id&sort_type=asc&year=2024&limit=10`
-        )
-        .then((response) => {
-          console.log(response.data.data.items);
-          return response.data.data.items || []; // Trả về mảng rỗng nếu không có items
-        })
-        .catch((error) => {
-          console.log("Lỗi khi gọi API tìm kiếm:", error);
-          return []; // Trả về mảng rỗng nếu có lỗi
-        });
-    }
-
-    // Nếu không có từ khóa, gọi API danh sách mặc định
-    return axios
-      .get(
-        `https://phimapi.com/v1/api/danh-sach/${tongHop}?&page=${nextPage}&sort_field=_id&sort_type=asc&limit=64`
-      )
-      .then((response) => {
-        console.log(response.data.data.items);
-        return response.data.data.items || []; // Trả về mảng rỗng nếu không có items
-      })
-      .catch((error) => {
-        console.log("Lỗi khi gọi API danh sách:", error);
-        return []; // Trả về mảng rỗng nếu có lỗi
-      });
-  };
 
   useEffect(() => {
-    getMovies().then((movies) => {
-      setMovies(movies); // Cập nhật danh sách phim
-    });
-  }, [tongHop, moviesFromSerch]); // Thêm moviesFromSerch vào mảng phụ thuộc
+    if (location.state?.movies) {
+      setMovies(location.state.movies); // ✅ Cập nhật danh sách phim khi tìm kiếm mới
+      return;
+    }
+
+    let apiUrl = "";
+     if (type === "genre") {
+      apiUrl = `https://phimapi.com/v1/api/the-loai/${genre}?page=1&limit=64`;
+      console.log("type api genre");
+    } else if (type === "country") {
+      apiUrl = `https://phimapi.com/v1/api/quoc-gia/${country}?page=1&limit=64`;
+      console.log("type api country");
+    } else if (type === "phim-bo") {
+      apiUrl = `https://phimapi.com/v1/api/danh-sach/phim-bo?page=1&limit=64`;
+      console.log("type api phim-bo");
+    } else if (type === "phim-le") {
+      apiUrl = `https://phimapi.com/v1/api/danh-sach/phim-le?page=1&limit=64`;
+      console.log("type api phim-le");
+    } else if (type === "tv-shows") {
+      apiUrl = `https://phimapi.com/v1/api/danh-sach/tv-shows?page=1&limit=64`;
+      console.log("type api tv-shows");
+    } else if (type === "hoat-hinh") {
+      apiUrl = `https://phimapi.com/v1/api/danh-sach/hoat-hinh?page=1&limit=64`;
+      console.log("type api hoat-hinh");
+    } else {
+      apiUrl = `https://phimapi.com/v1/api/danh-sach/${type}?page=1&limit=64`;
+      console.log("type api search");
+    }
+
+    axios.get(apiUrl)
+      .then((response) => {
+        type !== "seach"?setMovies(response.data.data.items || []):
+        setMovies(response.data.items || []);
+      })
+      .catch(() => {
+        setMovies([]);
+      });
+      console.log("goi lai useeffect");
+  }, [genre, country, type, location.state]); // ✅ Theo dõi location.state để cập nhật danh sách phim mới
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 p-5 gap-5 max-w-full mx-auto bg-[#010810]">
-      {movies.length > 0 &&
-        movies.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => navigate(`/phim/${item.slug}`)}
-            className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden"
-          >
-            <img
-              src={`https://phimimg.com/${item.poster_url}`}
-              className="w-full h-full object-cover rounded-lg group-hover:scale-125 transition-transform duration-300"
-              alt="poster"
-            />
-            <div className="relative -translate-y-full w-auto h-1/5 flex flex-col justify-center items-center text-center text-white leading-4 bg-[#080705] bg-opacity-60">
-              <h3 className="block text-center font-semibold">{item.name}</h3>
+    <div className="p-5 max-w-full mx-auto bg-[#010810]">
+      {movies.length > 0 ? (
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
+          {movies.map((item) => (
+            <div
+              key={item._id}
+              onClick={() => navigate(`/phim/${item.slug}`)}
+              className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden"
+            >
+              <img
+                src={`https://phimimg.com/${item.poster_url}`}
+                className="w-full h-full object-cover rounded-lg group-hover:scale-125 transition-transform duration-300"
+                alt={item.name}
+              />
+              <div className="absolute bottom-0 left-0 w-full h-1/5 bg-black bg-opacity-60 text-white text-center p-2">
+                <h3 className="text-sm font-semibold">{item.name}</h3>
+                {/* <span className="block text-center font-light overflow-y-hidden">
+          {item.origin_name}
+        </span> */}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-white">Không tìm thấy phim.</p>
+      )}
     </div>
   );
 };

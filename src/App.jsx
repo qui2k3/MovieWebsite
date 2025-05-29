@@ -12,15 +12,17 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/tim-kiem/:query" element={<BrowseMovie />} />
+        <Route path="/tim-kiem/:query" element={<BrowseMovie type="search" />} />
         <Route path="/phim/:movieSlug" element={<MovieDetails />} />
         <Route path="/xem-phim/:movieSlug/:episodeSlug" element={<WatchMovie />} />
-        <Route path="/the-loai/:genre" element={<BrowseMovie />} />
-        <Route path="/quoc-gia/:country" element={<BrowseMovie />} />
-        <Route path="/phim-bo" element={<BrowseMovie category="phim-bo" />} />
-        <Route path="/phim-le" element={<BrowseMovie category="phim-le" />} />
-        <Route path="/tv-shows" element={<BrowseMovie category="tv-shows" />} />
-        <Route path="/hoat-hinh" element={<BrowseMovie category="hoat-hinh" />} />
+
+        <Route path="/the-loai/:genre" element={<BrowseMovie type="genre" />} />
+        <Route path="/quoc-gia/:country" element={<BrowseMovie type="country" />} />
+        
+        <Route path="/phim-bo" element={<BrowseMovie type="phim-bo" />} />
+        <Route path="/phim-le" element={<BrowseMovie type="phim-le" />} />
+        <Route path="/tv-shows" element={<BrowseMovie type="tv-shows" />} />
+        <Route path="/hoat-hinh" element={<BrowseMovie type="hoat-hinh" />} />
       </Routes>
       <Footer />
     </>

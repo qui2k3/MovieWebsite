@@ -15,8 +15,8 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest }) => {
         alt={movie.name || "poster"}
       />
       <div className="absolute bottom-0 left-0 w-full h-1/5 flex flex-col justify-center items-center text-center text-white leading-4 bg-[#080705] bg-opacity-60 transition-all duration-300 transform translate-y-full group-hover:translate-y-0">
-        <h3 className="block text-center font-semibold">{movie.name}</h3>
-        <span className="block text-center font-light overflow-y-hidden">
+        <h3 className="block text-center font-semibold overflow-hidden">{movie.name}</h3>
+        <span className="block text-center font-light overflow-hidden">
           {movie.origin_name}
         </span>
       </div>

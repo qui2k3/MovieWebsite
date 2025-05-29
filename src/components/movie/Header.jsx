@@ -80,7 +80,7 @@ const Header = () => {
   
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && movies.length > 0) {
-      navigate(`/tim-kiem/${filter}`, { state: { filter } }); // Chuyển hướng và truyền dữ liệu
+      navigate(`/tim-kiem/${filter}`,{state:{movies}}); // Chuyển hướng và truyền dữ liệu
     }
   };
 
