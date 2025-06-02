@@ -3,9 +3,11 @@ import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getDatabase } from "firebase/database";
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  // ✅ Đã sửa: Truy cập biến môi trường trong Vite bằng import.meta.env
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "api-firebase-moviewebsite.firebaseapp.com",
   projectId: "api-firebase-moviewebsite",
   storageBucket: "api-firebase-moviewebsite.firebasestorage.app",
@@ -16,3 +18,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+
+// Bạn có thể export `app` và `database` để sử dụng ở các file khác
+export { app, database };
