@@ -6,3 +6,12 @@
     font-family: sans-serif;
   }
 }
+/* Bắt đầu phần CSS ghi đè cho Facebook Comments Fix lỗi chiều rộng lúc to lúc nhỏ */
+.fb-comments,
+.fb-comments iframe[style],
+.fb-comments span,
+.fb_iframe_widget,
+.fb_iframe_widget span,
+.fb_iframe_widget iframe {
+    width: 100% !important; /* Dòng này là chìa khóa để khắc phục lỗi kích thước */
+}
