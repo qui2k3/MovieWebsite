@@ -12,10 +12,6 @@ const Header = () => {
   const filterDebounce = useDebounce(filter, 500);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
-  // const handleCategoryClick = (genre) => {
-  //   // Chuyển hướng tới BrowseMovie và truyền dữ liệu thể loại qua state
-  //   navigate(`/TongHop/${genre}`, { state: { genre } });
-  // };
 
   const handleFilterChange = (e) => {
   const value = e.target.value;
@@ -25,9 +21,6 @@ const Header = () => {
 
   setFilter(sanitizedValue); // Cập nhật state với giá trị hợp lệ
 };
-
-
-
 
   const getMovies = () => {
     const searchUrl = `https://phimapi.com/v1/api/tim-kiem?keyword=${filterDebounce}&page=1`;
@@ -41,26 +34,9 @@ const Header = () => {
         console.log("Lỗi khi gọi api", error);
       });
   };
-  // const handleGetKeyWordSearch = (e) => {
-  //   console.log(e.target.value);
-  // }
-  // useEffect(() => {
-  //   //neu co filter
-  //   if (filterDebounce) {
-  //     getMovies().then((data) => console.log("Danh sách phim:", data));
-  //   }
-  // }, [filterDebounce]);
-  const [movies, setMovies] = useState([]);
-  // useEffect(() => {
-  //   if (filterDebounce) {
-  //     getMovies().then((data) => {
-  //       console.log("data:", data);
-  //       setMovies(data || []);
 
-  //     });
-  //     // console.log("name",movies[0]?.name);  đã lấy được tên phim
-  //   }
-  // }, [filterDebounce]);
+  const [movies, setMovies] = useState([]);
+
   useEffect(() => {
     if (filterDebounce.trim()) {
       getMovies().then((data) => {

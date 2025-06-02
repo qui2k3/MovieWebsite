@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VideoPlayer from "../../components/movie/VideoPlayer";
+import FacebookComments from "../../components/movie/FacebookComments";
 
 const WatchMovie = () => {
   const { movieSlug, episodeSlug } = useParams(); // :movieSlug/:episodeSlug
@@ -81,6 +82,7 @@ const WatchMovie = () => {
             : "null"}
         </ul>
       </div>
+      <FacebookComments/>
     </div>
   );
 };
