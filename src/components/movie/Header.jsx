@@ -14,13 +14,13 @@ const Header = () => {
   const isHomePage = location.pathname === "/";
 
   const handleFilterChange = (e) => {
-  const value = e.target.value;
+    const value = e.target.value;
 
-  // Chỉ cho phép chữ cái có dấu, số và khoảng trắng
-  const sanitizedValue = value.replace(/[^a-zA-Z0-9À-ỹ\s]/g, ""); 
+    // Chỉ cho phép chữ cái có dấu, số và khoảng trắng
+    const sanitizedValue = value.replace(/[^a-zA-Z0-9À-ỹ\s]/g, "");
 
-  setFilter(sanitizedValue); // Cập nhật state với giá trị hợp lệ
-};
+    setFilter(sanitizedValue); // Cập nhật state với giá trị hợp lệ
+  };
 
   const getMovies = () => {
     const searchUrl = `https://phimapi.com/v1/api/tim-kiem?keyword=${filterDebounce}&page=1`;
@@ -53,10 +53,10 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && movies.length > 0) {
-      navigate(`/tim-kiem/${filter}`,{state:{movies}}); // Chuyển hướng và truyền dữ liệu
+      navigate(`/tim-kiem/${filter}`, { state: { movies } }); // Chuyển hướng và truyền dữ liệu
     }
   };
 
@@ -69,8 +69,8 @@ const Header = () => {
               ? "bg-black fixed"
               : "lg:absolute lg:bg-transparent"
             : isScrolled
-              ? "fixed bg-black"
-              : "bg-black "
+            ? "fixed bg-black"
+            : "bg-black "
         } `}
       >
         <div className="flex h-full justify-between items-start pt-1 font-bold">
@@ -84,7 +84,7 @@ const Header = () => {
           </a>
           <div className="relative ml-5">
             <input
-              className=" h-10 w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
+              className=" h-10 max-w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
               placeholder="Tìm kiếm phim"
               value={filter}
               onInput={handleFilterChange}

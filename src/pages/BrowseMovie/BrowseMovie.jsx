@@ -15,7 +15,7 @@ const BrowseMovie = ({ type }) => {
     }
 
     let apiUrl = "";
-     if (type === "genre") {
+    if (type === "genre") {
       apiUrl = `https://phimapi.com/v1/api/the-loai/${genre}?page=1&limit=64`;
       console.log("type api genre");
     } else if (type === "country") {
@@ -38,15 +38,17 @@ const BrowseMovie = ({ type }) => {
       console.log("type api search");
     }
 
-    axios.get(apiUrl)
+    axios
+      .get(apiUrl)
       .then((response) => {
-        type !== "seach"?setMovies(response.data.data.items || []):
-        setMovies(response.data.items || []);
+        type !== "search"
+          ? setMovies(response.data.data.items || [])
+          : setMovies(response.data.items || []);
       })
       .catch(() => {
         setMovies([]);
       });
-      console.log("goi lai useeffect");
+    console.log("goi lai useeffect");
   }, [genre, country, type, location.state]); // ✅ Theo dõi location.state để cập nhật danh sách phim mới
 
   return (
@@ -62,13 +64,15 @@ const BrowseMovie = ({ type }) => {
               <img
                 src={`https://phimimg.com/${item.poster_url}`}
                 className="w-full h-full object-cover rounded-lg group-hover:scale-125 transition-transform duration-300"
-                alt={item.name}
+                alt={item.name || "poster phim"}
               />
-              <div className="absolute bottom-0 left-0 w-full h-1/5 bg-black bg-opacity-60 text-white text-center p-2">
-                <h3 className="text-sm font-semibold">{item.name}</h3>
-                {/* <span className="block text-center font-light overflow-y-hidden">
-          {item.origin_name}
-        </span> */}
+              <div className="absolute bottom-0 left-0 w-full h-1/5 flex flex-col justify-center text-center text-white leading-4 bg-[#080705] bg-opacity-60 p-1">
+                <h3 className="block text-center font-semibold px-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {item.name}
+                </h3>
+                <span className="block text-center font-light text-sm px-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {item.origin_name}
+                </span>
               </div>
             </div>
           ))}
