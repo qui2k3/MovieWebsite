@@ -3,36 +3,39 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VideoPlayer from "../../components/movie/VideoPlayer";
 import FacebookComments from "../../components/movie/FacebookComments";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const WatchMovie = () => {
-  const { movieSlug, episodeSlug } = useParams(); // :movieSlug/:episodeSlug
+  const { movieSlug, episodeSlug } = useParams();
   const navigate = useNavigate();
-
   const [episodeList, setEpisodeList] = useState([]);
   const [movieDetail, setMovieDetail] = useState({});
   const [movieName, setMovieName] = useState("");
   const [curentEpisodeSlug, setCurentEpisodeSlug] = useState("");
   const [indexArrServer_data, setIndexArrServer_data] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  // Gọi API để lấy dữ liệu phim
   useEffect(() => {
-    axios.get(`https://phimapi.com/phim/${movieSlug}`).then((response) => {
-      const movie = response.data.movie || {};
-      const episodes = response.data.episodes || [];
-      const name = response.data.movie.name || "";
-      setMovieDetail(movie);
-      setEpisodeList(episodes);
-      setMovieName(name);
+    axios
+      .get(`https://phimapi.com/phim/${movieSlug}`)
+      .then((response) => {
+        const movie = response.data.movie || {};
+        const episodes = response.data.episodes || [];
+        setMovieDetail(movie);
+        setEpisodeList(episodes);
+        setMovieName(response.data.movie.name || "");
 
-      // Đặt tập mặc định
-      if (episodes.length > 0 && episodes[0]?.server_data?.length > 0) {
-        setCurentEpisodeSlug(episodes[0].server_data[0]?.link_embed || ""); // Tập đầu tiên
-        setIndexArrServer_data(0); // Chỉ mục mặc định là 0
-      }
-    });
+        if (episodes.length > 0 && episodes[0]?.server_data?.length > 0) {
+          setCurentEpisodeSlug(episodes[0].server_data[0]?.link_embed || "");
+          setIndexArrServer_data(0);
+        }
+
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [movieSlug]);
 
-  // Cập nhật link khi chỉ mục thay đổi
   useEffect(() => {
     if (episodeList.length > 0 && episodeList[0]?.server_data?.length > 0) {
       setCurentEpisodeSlug(
@@ -41,49 +44,66 @@ const WatchMovie = () => {
     }
   }, [episodeList, indexArrServer_data]);
 
-  // Xử lý click vào tập
   const handleEpisodeClick = (slug, index) => {
-    setIndexArrServer_data(index); // Cập nhật chỉ mục tập
-    navigate(`/xem-phim/${movieSlug}/${slug}`); // Điều hướng đến tập mới
+    setIndexArrServer_data(index);
+    navigate(`/xem-phim/${movieSlug}/${slug}`);
   };
 
   return (
-    <div className="bg-[#010810] text-white">
-      <div className="text-[22px] font-semibold p-2 ml-10">
-       <h2>Xem Phim {movieName}</h2>
-      </div>
-      {/* Hiển thị video */}
-      <VideoPlayer link={curentEpisodeSlug} />
+    <SkeletonTheme baseColor="#202020" highlightColor="#444">
+      <div className="bg-[#010810] text-white">
+        <div className="text-[22px] font-semibold p-2 ml-10">
+          <h2>
+            {loading ? (
+              <Skeleton width="500px" height="27px" />
+            ) : (
+              `Xem Phim ${movieName}`
+            )}
+          </h2>
+        </div>
 
-      {/* Thông tin phim */}
-      {/* <h1>{movieSlug}</h1>
-      <p>episodeSlug: {episodeSlug}</p>
-      <p>movieSlug: {movieSlug}</p>
-      <h1 className="text-white z-50">
-        {episodeList?.[0]?.server_name ? episodeList[0].server_name : "null"}
-      </h1> */}
+        {/* Hiển thị video hoặc Skeleton */}
+        {loading ? (
+          <Skeleton width="100%" height="500px" />
+        ) : (
+          <VideoPlayer link={curentEpisodeSlug} />
+        )}
 
-      {/* Danh sách tập */}
-
-      <div className="mx-auto p-3">
-        <ul className="flex gap-2 flex-wrap items-center">
-          {episodeList?.[0]?.server_data
-            ? episodeList[0].server_data.map((obj, index) => (
+        {/* Danh sách tập */}
+        <div className="mx-auto p-3">
+          {loading ? (
+            <ul className="flex gap-2 flex-wrap items-center">
+              {Array(18)
+                .fill()
+                .map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    width="62px"
+                    height="45px"
+                    className="rounded-sm p-1"
+                  />
+                ))}
+            </ul>
+          ) : (
+            <ul className="flex gap-2 flex-wrap items-center">
+              {episodeList?.[0]?.server_data?.map((obj, index) => (
                 <li
                   key={index}
-                  onClick={() => handleEpisodeClick(obj.slug, index)} // Truyền slug và chỉ mục
+                  onClick={() => handleEpisodeClick(obj.slug, index)}
                   className={`block bg-[#4f4f4f] w-[62px] h-[45px] text-[14px] font-semibold text-center p-1 text-[#fffef8] rounded-sm cursor-pointer ${
                     indexArrServer_data === index ? "bg-green-500" : ""
                   }`}
                 >
                   {obj.name}
                 </li>
-              ))
-            : "null"}
-        </ul>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <FacebookComments />
       </div>
-      <FacebookComments/>
-    </div>
+    </SkeletonTheme>
   );
 };
 

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import Catergory from "./Catergory";
+import CategoryDesktop from "./CategoryDesktop";
+import CategoryMobile from "./CategoryMobile";
 import { ListLink, categoryProps, countryProps } from "../../contants/menuData";
 import useDebounce from "../hooks/useDebounce";
 import axios from "axios";
+
 const Header = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -13,38 +15,16 @@ const Header = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
+  // Không cần state `movies` ở đây nữa vì `BrowseMovie` sẽ tự gọi API.
+  // const [movies, setMovies] = useState([]);
+
   const handleFilterChange = (e) => {
     const value = e.target.value;
-
-    // Chỉ cho phép chữ cái có dấu, số và khoảng trắng
     const sanitizedValue = value.replace(/[^a-zA-Z0-9À-ỹ\s]/g, "");
-
-    setFilter(sanitizedValue); // Cập nhật state với giá trị hợp lệ
+    setFilter(sanitizedValue);
   };
 
-  const getMovies = () => {
-    const searchUrl = `https://phimapi.com/v1/api/tim-kiem?keyword=${filterDebounce}&page=1`;
-    return axios
-      .get(searchUrl)
-      .then((response) => {
-        // console.log("Kết quả tìm kiếm:", response.data.data.items);
-        return response.data.data.items;
-      })
-      .catch((error) => {
-        console.log("Lỗi khi gọi api", error);
-      });
-  };
-
-  const [movies, setMovies] = useState([]);
-
-  useEffect(() => {
-    if (filterDebounce.trim()) {
-      getMovies().then((data) => {
-        console.log("Danh sách phim:", data);
-        setMovies(data || []); // Lưu kết quả tìm kiếm
-      });
-    }
-  }, [filterDebounce]);
+  // Logic gọi API getMovies không cần ở đây nữa, sẽ chuyển sang BrowseMovie
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,21 +35,23 @@ const Header = () => {
   }, []);
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && movies.length > 0) {
-      navigate(`/tim-kiem/${filter}`, { state: { movies } }); // Chuyển hướng và truyền dữ liệu
+    if (e.key === "Enter" && filter.trim()) {
+      // Kiểm tra filter có giá trị để tránh navigate với chuỗi rỗng
+      navigate(`/tim-kiem/${filter.trim()}`); // Chỉ chuyển hướng, không truyền state movies nữa
+      setFilter(""); // Xóa input sau khi tìm kiếm
     }
   };
 
   return (
     <>
       <header
-        className={`w-full bg-black h-auto p-2 flex flex-col lg:flex-row justify-between items-start z-50 ${
+        className={`w-full h-auto p-2 flex flex-col lg:flex-row justify-between items-start z-50 ${
           isHomePage
             ? isScrolled
-              ? "bg-black fixed"
-              : "lg:absolute lg:bg-transparent"
+              ? "bg-black relative lg:fixed "
+              : "lg:absolute lg:bg-transparent bg-black"
             : isScrolled
-            ? "fixed bg-black"
+            ? "lg:fixed bg-black"
             : "bg-black "
         } `}
       >
@@ -95,13 +77,20 @@ const Header = () => {
             </div>
           </div>
         </div>
+
         <div>
-          <ul className="flex items-baseline gap-6 px-5 text-[18px] text-white fw-black text-shadow">
-            <li>
-              <Catergory data={categoryProps}></Catergory>
+          <ul className="flex flex-col lg:flex-row items-baseline gap-6 px-5 text-[18px] text-white fw-black text-shadow">
+            <li className=" hidden lg:block">
+              <CategoryDesktop data={categoryProps}></CategoryDesktop>
             </li>
-            <li>
-              <Catergory data={countryProps}></Catergory>
+            <li className=" hidden lg:block">
+              <CategoryDesktop data={countryProps}></CategoryDesktop>
+            </li>
+            <li className=" block lg:hidden">
+              <CategoryMobile data={categoryProps}></CategoryMobile>
+            </li>
+            <li className=" block lg:hidden">
+              <CategoryMobile data={countryProps}></CategoryMobile>
             </li>
             {ListLink.map((item) => {
               return (
@@ -118,6 +107,7 @@ const Header = () => {
           </ul>
         </div>
       </header>
+
       {location.pathname === "/" && (
         <section className="banner w-full h-screen bg-white">
           <div className="w-full h-full relative">

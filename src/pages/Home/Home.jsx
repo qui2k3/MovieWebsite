@@ -1,21 +1,22 @@
+// Home.jsx
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MovieCard from "../../components/movie/MovieCard";
+import MovieCard, { MovieCardSkeleton } from "../../components/movie/MovieCard"; // Import MovieCardSkeleton
 import { SwiperSlide, Swiper } from "swiper/react";
 import "swiper/css";
+import "react-loading-skeleton/dist/skeleton.css"; // Import CSS của skeleton
 
-// import LazyLoad from "react-lazyload";
-
+// Các lời gọi API giữ nguyên
 const getThelatestMovies = async () => {
   try {
     const response = await axios.get(
       "https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1"
     );
-    return response.data.items; // Trả về danh sách phim
+    return response.data.items;
   } catch (error) {
-    console.log("API Error (latest movies):", error);
-    return []; // Trả về mảng rỗng khi có lỗi
+    console.log("Lỗi API (phim mới nhất):", error);
+    return [];
   }
 };
 
@@ -26,7 +27,7 @@ const getTheCartoons = async () => {
     );
     return response.data.data.items;
   } catch (error) {
-    console.log("API Error (cartoons):", error);
+    console.log("Lỗi API (hoạt hình):", error);
     return [];
   }
 };
@@ -38,7 +39,7 @@ const getTheChinaMovies = async () => {
     );
     return response.data.data.items;
   } catch (error) {
-    console.log("API Error (China movies):", error);
+    console.log("Lỗi API (phim Trung Quốc):", error);
     return [];
   }
 };
@@ -50,146 +51,89 @@ const getTheKoreanMovies = async () => {
     );
     return response.data.data.items;
   } catch (error) {
-    console.log("API Error (Korean movies):", error);
+    console.log("Lỗi API (phim Hàn Quốc):", error);
     return [];
   }
 };
+
 const Home = () => {
   const navigate = useNavigate();
   const [moviesLastest, setMoviesMoiCapNhat] = useState([]);
   const [moviesChina, setMoviesChina] = useState([]);
   const [moviesKorean, setMoviesKorean] = useState([]);
   const [moviesCartoon, setMoviesCartoon] = useState([]);
+  const [loading, setLoading] = useState(true); // State để quản lý trạng thái tải
+
   useEffect(() => {
     const fetchMovies = async () => {
-      const latestMovies = await getThelatestMovies(); // Gọi phim mới cập nhật
-      const chinaMovies = await getTheChinaMovies().then((res) => {
-       setMoviesChina(res || []);}); // Gọi phim Trung Quốc
-        
-      const koreanMovies = await getTheKoreanMovies(); // Gọi phim Hàn Quốc
-      const cartoons = await getTheCartoons(); // Gọi phim hoạt hình
+      setLoading(true); // Đặt loading thành true trước khi fetch
+      try {
+        const [latestMovies, chinaMovies, koreanMovies, cartoons] =
+          await Promise.all([
+            getThelatestMovies(),
+            getTheChinaMovies(),
+            getTheKoreanMovies(),
+            getTheCartoons(),
+          ]);
 
-      setMoviesMoiCapNhat(latestMovies || []); // Cập nhật state với dữ liệu hoặc mảng rỗng
-      
-      setMoviesKorean(koreanMovies || []);
-      setMoviesCartoon(cartoons || []);
+        setMoviesMoiCapNhat(latestMovies || []);
+        setMoviesChina(chinaMovies || []);
+        setMoviesKorean(koreanMovies || []);
+        setMoviesCartoon(cartoons || []);
+      } catch (error) {
+        console.error("Lỗi khi lấy phim:", error);
+      } finally {
+        setLoading(false); // Đặt loading thành false sau khi fetch (thành công hoặc lỗi)
+      }
     };
 
-    fetchMovies(); // Thực hiện gọi dữ liệu
+    fetchMovies();
   }, []);
+
+  const renderMovieSection = (title, movies) => (
+    <section className="bg-[#010810] p-5 pt-10">
+      <h2 className="text-[24px] pl-5 pb-5 text-white font-semibold ">
+        {title}
+      </h2>
+      <Swiper
+        grabCursor={true}
+        spaceBetween={20}
+        slidesPerView={2}
+        breakpoints={{
+          1024: {
+            slidesPerView: 5,
+          },
+        }}
+      >
+        {loading
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <SwiperSlide key={index}>
+                <MovieCardSkeleton />
+              </SwiperSlide>
+            ))
+          : movies.length > 0 &&
+            movies.map((item) => (
+              <SwiperSlide key={item.id}>
+                <MovieCard
+                  movie={item}
+                  // prop thisForUrlImageMovieLastest chỉ cần thiết cho phim mới nhất nếu cấu trúc URL khác
+                  thisForUrlImageMovieLastest={
+                    title === "Phim Mới Cập Nhật" ? true : false
+                  }
+                  showNameOnHover={true}
+                />
+              </SwiperSlide>
+            ))}
+      </Swiper>
+    </section>
+  );
 
   return (
     <>
-      {/* // phim moi cap nhat */}
-      <section className="bg-[#010810] p-5 pt-10">
-        <h2 className="text-[24px] pl-5 pb-5 text-white font-semibold ">
-          Phim Mới Cập Nhật
-        </h2>
-        <Swiper
-          grabCursor={true} // Cho phép người dùng kéo slider
-          spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={2} // Số slide hiển thị cùng lúc
-          breakpoints={{
-    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
-    1024: {
-      slidesPerView: 5,      // Hiển thị 5 slide
-    },
-  }}
-          // navigation // Nút điều hướng
-          // pagination={{ clickable: true }} // Hiển thị phân trang
-          // autoplay={{ delay: 3000 }} // Tự động chuyển slide
-        >
-          {moviesLastest.length > 0 &&
-            moviesLastest.map((item) => (
-              <SwiperSlide key={item.id}>
-                <MovieCard movie={item} thisForUrlImageMovieLastest={moviesLastest}></MovieCard>
-              </SwiperSlide>
-            ))}
-        </Swiper>
-      </section>
-      {/* // phim trung quoc */}
-      <section className="bg-[#010810] p-5 pt-10">
-        <h2 className="text-[24px] pl-5 pb-5 text-white font-semibold ">
-          Phim Trung Quốc
-        </h2>
-        {/* <div className="grid grid-cols-2 md:grid-cols-5 p-3 gap-5 max-w-6xl mx-auto "> */}
-        <Swiper
-          grabCursor={true} // Cho phép người dùng kéo slider
-          spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={2} // Số slide hiển thị cùng lúc
-          breakpoints={{
-    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
-    1024: {
-      slidesPerView: 5,      // Hiển thị 5 slide
-    },
-  }}
-          // navigation // Nút điều hướng
-          // pagination={{ clickable: true }} // Hiển thị phân trang
-          // autoplay={{ delay: 3000 }} // Tự động chuyển slide
-        >
-          {moviesChina.length > 0 &&
-            moviesChina.map((item) => (
-              <SwiperSlide key={item.id}>
-                <MovieCard movie={item}></MovieCard>
-              </SwiperSlide>
-            ))}
-        </Swiper>
-        {/* </div> */}
-      </section>
-      {/* phim han quoc */}
-      <section className="bg-[#010810] p-5 pt-10">
-        <h2 className="text-[24px] pl-5 pb-5 text-white font-semibold ">
-          Phim Hàn Quốc
-        </h2>
-        <Swiper
-          grabCursor={true} // Cho phép người dùng kéo slider
-          spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={2} // Số slide hiển thị cùng lúc
-          breakpoints={{
-    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
-    1024: {
-      slidesPerView: 5,      // Hiển thị 5 slide
-    },
-  }}
-          // navigation // Nút điều hướng
-          // pagination={{ clickable: true }} // Hiển thị phân trang
-          // autoplay={{ delay: 3000 }} // Tự động chuyển slide
-        >
-          {moviesKorean.length > 0 &&
-            moviesKorean.map((item) => (
-              <SwiperSlide key={item.id}>
-                <MovieCard movie={item}></MovieCard>
-              </SwiperSlide>
-            ))}
-        </Swiper>
-      </section>
-      {/* phim hoat hinh */}
-      <section className="bg-[#010810] p-5 pt-10">
-        <h2 className="text-[24px] pl-5 pb-5 text-white font-semibold ">
-          Phim Hoạt Hình
-        </h2>
-        <Swiper
-          grabCursor={true} // Cho phép người dùng kéo slider
-          spaceBetween={20} // Khoảng cách giữa các slide
-          slidesPerView={2} // Số slide hiển thị cùng lúc
-          breakpoints={{
-    // Khi màn hình có chiều rộng từ 1024px trở lên (laptop và màn hình lớn)
-    1024: {
-      slidesPerView: 5,      // Hiển thị 5 slide
-    },
-  }}
-          // navigation // Nút điều hướng
-          // pagination={{ clickable: true }} // Hiển thị phân trang
-          // autoplay={{ delay: 3000 }} // Tự động chuyển slide
-        >
-          {moviesCartoon.length > 0 &&
-            moviesCartoon.map((item) => (
-              <SwiperSlide key={item.id}>
-                <MovieCard movie={item}></MovieCard>
-              </SwiperSlide>
-            ))}
-        </Swiper>
-      </section>
+      {renderMovieSection("Phim Mới Cập Nhật", moviesLastest)}
+      {renderMovieSection("Phim Trung Quốc", moviesChina)}
+      {renderMovieSection("Phim Hàn Quốc", moviesKorean)}
+      {renderMovieSection("Phim Hoạt Hình", moviesCartoon)}
     </>
   );
 };

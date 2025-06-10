@@ -1,84 +1,161 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import MovieCard, { MovieCardSkeleton } from "../../components/movie/MovieCard";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const BrowseMovie = ({ type }) => {
-  const { genre, country } = useParams();
-  const location = useLocation();
+  const { genre, country, query } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(
+    parseInt(searchParams.get("page") || "1")
+  );
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchMovies = useCallback(
+    async (page) => {
+      setLoading(true);
+      let apiUrl = "";
+      const limit = 30;
+
+      if (type === "search") {
+        if (!query) {
+          setMovies([]);
+          setTotalPages(0);
+          setLoading(false);
+          return;
+        }
+        apiUrl = `https://phimapi.com/v1/api/tim-kiem?keyword=${query}&page=${page}&limit=${limit}`;
+      } else if (type === "genre") {
+        apiUrl = `https://phimapi.com/v1/api/the-loai/${genre}?page=${page}&limit=${limit}`;
+      } else if (type === "country") {
+        apiUrl = `https://phimapi.com/v1/api/quoc-gia/${country}?page=${page}&limit=${limit}`;
+      } else {
+        apiUrl = `https://phimapi.com/v1/api/danh-sach/${type}?page=${page}&limit=${limit}`;
+      }
+
+      try {
+        const response = await axios.get(apiUrl);
+        setMovies(response.data?.data?.items || []);
+        setTotalPages(response.data?.data?.params?.pagination?.totalPages || 0);
+      } catch (error) {
+        console.error("Lỗi API:", error);
+        setMovies([]);
+        setTotalPages(0);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [genre, country, query, type]
+  );
 
   useEffect(() => {
-    if (location.state?.movies) {
-      setMovies(location.state.movies); // ✅ Cập nhật danh sách phim khi tìm kiếm mới
-      return;
+    const pageFromUrl = parseInt(searchParams.get("page") || "1");
+    if (pageFromUrl !== currentPage) {
+      setCurrentPage(pageFromUrl);
+    }
+    fetchMovies(pageFromUrl);
+  }, [genre, country, query, type, fetchMovies, searchParams]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    searchParams.set("page", newPage.toString());
+    setSearchParams(searchParams);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const renderPaginationButtons = () => {
+    const pages = [];
+    const maxPageButtons = 5;
+    const startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+    const endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+    if (currentPage > 1) {
+      pages.push(
+        <button
+          key="prev"
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="px-4 py-2 mx-1 rounded-md bg-gray-700 text-white hover:bg-gray-600"
+        >
+          Trang trước
+        </button>
+      );
     }
 
-    let apiUrl = "";
-    if (type === "genre") {
-      apiUrl = `https://phimapi.com/v1/api/the-loai/${genre}?page=1&limit=64`;
-      console.log("type api genre");
-    } else if (type === "country") {
-      apiUrl = `https://phimapi.com/v1/api/quoc-gia/${country}?page=1&limit=64`;
-      console.log("type api country");
-    } else if (type === "phim-bo") {
-      apiUrl = `https://phimapi.com/v1/api/danh-sach/phim-bo?page=1&limit=64`;
-      console.log("type api phim-bo");
-    } else if (type === "phim-le") {
-      apiUrl = `https://phimapi.com/v1/api/danh-sach/phim-le?page=1&limit=64`;
-      console.log("type api phim-le");
-    } else if (type === "tv-shows") {
-      apiUrl = `https://phimapi.com/v1/api/danh-sach/tv-shows?page=1&limit=64`;
-      console.log("type api tv-shows");
-    } else if (type === "hoat-hinh") {
-      apiUrl = `https://phimapi.com/v1/api/danh-sach/hoat-hinh?page=1&limit=64`;
-      console.log("type api hoat-hinh");
-    } else {
-      apiUrl = `https://phimapi.com/v1/api/danh-sach/${type}?page=1&limit=64`;
-      console.log("type api search");
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-4 py-2 mx-1 rounded-md ${
+            i === currentPage
+              ? "bg-red-600 text-white"
+              : "bg-gray-700 text-white hover:bg-gray-600"
+          }`}
+        >
+          {i}
+        </button>
+      );
     }
 
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        type !== "search"
-          ? setMovies(response.data.data.items || [])
-          : setMovies(response.data.items || []);
-      })
-      .catch(() => {
-        setMovies([]);
-      });
-    console.log("goi lai useeffect");
-  }, [genre, country, type, location.state]); // ✅ Theo dõi location.state để cập nhật danh sách phim mới
+    if (currentPage < totalPages) {
+      pages.push(
+        <button
+          key="next"
+          onClick={() => handlePageChange(currentPage + 1)}
+          className="px-4 py-2 mx-1 rounded-md bg-gray-700 text-white hover:bg-gray-600"
+        >
+          Trang sau
+        </button>
+      );
+    }
+
+    return (
+      <div className="flex flex-wrap justify-center items-center gap-2 p-4 overflow-x-auto">
+        {pages}
+      </div>
+    );
+  };
 
   return (
-    <div className="p-5 max-w-full mx-auto bg-[#010810]">
-      {movies.length > 0 ? (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-5">
-          {movies.map((item) => (
-            <div
-              key={item._id}
-              onClick={() => navigate(`/phim/${item.slug}`)}
-              className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden"
-            >
-              <img
-                src={`https://phimimg.com/${item.poster_url}`}
-                className="w-full h-full object-cover rounded-lg group-hover:scale-125 transition-transform duration-300"
-                alt={item.name || "poster phim"}
-              />
-              <div className="absolute bottom-0 left-0 w-full h-1/5 flex flex-col justify-center text-center text-white leading-4 bg-[#080705] bg-opacity-60 p-1">
-                <h3 className="block text-center font-semibold px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                  {item.name}
-                </h3>
-                <span className="block text-center font-light text-sm px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                  {item.origin_name}
-                </span>
-              </div>
-            </div>
+    <div className="p-5 max-w-full mx-auto bg-[#010810] min-h-screen">
+      {totalPages > 1 && (
+        <div className="flex justify-center mb-4 p-4">
+          {renderPaginationButtons()}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-5">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <MovieCardSkeleton key={index} />
           ))}
         </div>
+      ) : movies.length > 0 ? (
+        <>
+          <div className="grid grid-cols-3 lg:grid-cols-5 gap-5">
+            {movies.map((item) => (
+              <MovieCard
+                key={item._id}
+                movie={item}
+                thisForUrlImageMovieLastest={false}
+                showNameOnHover={false}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8 p-4">
+              {renderPaginationButtons()}
+            </div>
+          )}
+        </>
       ) : (
-        <p className="text-center text-white">Không tìm thấy phim.</p>
+        <p className="text-center text-white text-lg">Không tìm thấy phim.</p>
       )}
     </div>
   );

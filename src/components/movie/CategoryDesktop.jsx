@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
-const Catergory = ({ data }) => {
+const CategoryDesktop = ({ data }) => {
   const { title, genres, slug } = data; // ✅ Thêm `slug` cho thể loại
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate(); // ✅ Dùng để chuyển hướng
@@ -28,8 +28,10 @@ const Catergory = ({ data }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <span className={`inline-block w-[78px] h-[28px] text-center gap-x-1.5 font-semibold shadow-xs outline-none text-[18px] text-white font-sans fw-black text-shadow bg-transparent cursor-pointer
-       ${isOpen ? "text-green-400" : "text-white"}`}>
+      <span
+        className={`inline-block w-[78px] h-[28px] text-center gap-x-1.5 font-semibold shadow-xs outline-none text-[18px] text-white font-sans fw-black text-shadow bg-transparent cursor-pointer
+       ${isOpen ? "text-green-400" : "text-white"}`}
+      >
         {title}
       </span>
       <div
@@ -52,4 +54,4 @@ const Catergory = ({ data }) => {
   );
 };
 
-export default Catergory;
+export default CategoryDesktop;

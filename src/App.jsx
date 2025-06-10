@@ -12,13 +12,22 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/tim-kiem/:query" element={<BrowseMovie type="search" />} />
+        <Route
+          path="/tim-kiem/:query"
+          element={<BrowseMovie type="search" />}
+        />
         <Route path="/phim/:movieSlug" element={<MovieDetails />} />
-        <Route path="/xem-phim/:movieSlug/:episodeSlug" element={<WatchMovie />} />
+        <Route
+          path="/xem-phim/:movieSlug/:episodeSlug"
+          element={<WatchMovie />}
+        />
 
         <Route path="/the-loai/:genre" element={<BrowseMovie type="genre" />} />
-        <Route path="/quoc-gia/:country" element={<BrowseMovie type="country" />} />
-        
+        <Route
+          path="/quoc-gia/:country"
+          element={<BrowseMovie type="country" />}
+        />
+
         <Route path="/phim-bo" element={<BrowseMovie type="phim-bo" />} />
         <Route path="/phim-le" element={<BrowseMovie type="phim-le" />} />
         <Route path="/tv-shows" element={<BrowseMovie type="tv-shows" />} />
