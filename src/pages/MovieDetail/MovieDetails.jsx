@@ -38,7 +38,10 @@ const MovieDetails = () => {
   };
 
   return (
-    <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    <SkeletonTheme
+      baseColor="rgb(55, 65, 81)"
+      highlightColor="rgb(80, 90, 100)"
+    >
       <div className="text-red-400 bg-[#010810] max-w-full pt-8">
         <div className="flex flex-col">
           {loading ? (

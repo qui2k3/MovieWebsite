@@ -50,7 +50,10 @@ const WatchMovie = () => {
   };
 
   return (
-    <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    <SkeletonTheme
+      baseColor="rgb(55, 65, 81)"
+      highlightColor="rgb(80, 90, 100)"
+    >
       <div className="bg-[#010810] text-white">
         <div className="text-[22px] font-semibold p-2 ml-10">
           <h2>
