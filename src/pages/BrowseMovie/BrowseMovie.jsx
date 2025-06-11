@@ -121,13 +121,34 @@ const BrowseMovie = ({ type }) => {
     );
   };
 
+  // Hàm mới để render skeleton cho phân trang
+  const renderPaginationSkeleton = () => {
+    return (
+      <div className="flex flex-wrap justify-center items-center gap-2 p-4 overflow-x-auto">
+        {/* Tạo 5 skeleton buttons cho phân trang */}
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Skeleton
+            key={index}
+            width={60}
+            height={38}
+            className="mx-1 rounded-md"
+            baseColor="rgb(55, 65, 81)" // Màu nền chính của skeleton
+            highlightColor="rgb(80, 90, 100)" // Màu gợn sóng (sáng hơn một chút)
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-5 max-w-full mx-auto bg-[#010810] min-h-screen">
-      {totalPages > 1 && (
-        <div className="flex justify-center mb-4 p-4">
-          {renderPaginationButtons()}
-        </div>
-      )}
+      {/* Phân trang phía trên */}
+      {/* Hiển thị skeleton nếu đang tải, ngược lại hiển thị nút phân trang (nếu có) */}
+      <div className="flex justify-center mb-4 p-4">
+        {loading
+          ? renderPaginationSkeleton()
+          : totalPages > 1 && renderPaginationButtons()}
+      </div>
 
       {loading ? (
         <div className="grid grid-cols-3 lg:grid-cols-5 gap-5">
@@ -148,11 +169,13 @@ const BrowseMovie = ({ type }) => {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-8 p-4">
-              {renderPaginationButtons()}
-            </div>
-          )}
+          {/* Phân trang phía dưới */}
+          {/* Hiển thị skeleton nếu đang tải, ngược lại hiển thị nút phân trang (nếu có) */}
+          <div className="flex justify-center mt-8 p-4">
+            {loading
+              ? renderPaginationSkeleton()
+              : totalPages > 1 && renderPaginationButtons()}
+          </div>
         </>
       ) : (
         <p className="text-center text-white text-lg">Không tìm thấy phim.</p>

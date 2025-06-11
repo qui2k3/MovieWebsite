@@ -65,7 +65,10 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
 // Skeleton Card
 const MovieCardSkeleton = () => {
   return (
-    <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    <SkeletonTheme
+      baseColor="rgb(55, 65, 81)"
+      highlightColor="rgb(80, 90, 100)"
+    >
       <div className="max-h-72 relative bg-white shadow-md rounded-lg overflow-hidden">
         <Skeleton
           width="100%"
@@ -74,12 +77,18 @@ const MovieCardSkeleton = () => {
           className="rounded-lg animate-wave"
         />
         <div className="absolute p-1 bottom-0 left-0 w-full h-1/5 flex flex-col justify-center text-center leading-4 bg-[#080705] bg-opacity-60">
-          <h3 className="block px-1 text-center font-semibold whitespace-nowrap overflow-hidden text-ellipsis ">
+          {/* <h3 className="block px-1 text-center font-semibold whitespace-nowrap overflow-hidden text-ellipsis ">
             <Skeleton width="100%" />
           </h3>
           <span className="block px-1 text-center text-sm font-light whitespace-nowrap overflow-hidden text-ellipsis ">
             <Skeleton width="100%" />
-          </span>
+          </span> */}
+          <div className="pb-1">
+            <Skeleton width="100%" />
+          </div>
+          <div className="">
+            <Skeleton width="100%" />
+          </div>
         </div>
       </div>
     </SkeletonTheme>
