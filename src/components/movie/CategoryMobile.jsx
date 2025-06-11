@@ -59,7 +59,7 @@ const CategoryMobile = ({ data, onClose }) => {
         {/* Icon mũi tên xoay */}
         <svg
           className={`ml-1 inline w-4 h-4 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
+            isOpen ? "" : ""
           }`}
           fill="none"
           stroke="currentColor"
@@ -85,9 +85,9 @@ const CategoryMobile = ({ data, onClose }) => {
         `}
       >
         {genres.map((genre, index) => (
-          <div key={genre} className="py-1 cursor-pointer">
+          <div key={genre} className="py-1 cursor-pointer ">
             <div
-              className="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-gray-900"
+              className="block px-4 py-2 text-sm text-white "
               onClick={() => handleCategoryClick(genre, index)}
             >
               {genre}

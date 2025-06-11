@@ -24,12 +24,12 @@ const CategoryDesktop = ({ data }) => {
 
   return (
     <div
-      className="relative inline-block text-left"
+      className="relative inline-block text-left group"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <span
-        className={`inline-block w-[78px] h-[28px] text-center gap-x-1.5 font-semibold shadow-xs outline-none text-[18px] text-white font-sans fw-black text-shadow bg-transparent cursor-pointer
+        className={`inline-block w-[78px] h-[28px] text-center gap-x-1.5 font-semibold shadow-xs outline-none text-[18px] text-white font-sans fw-black text-shadow bg-transparent cursor-pointer group-hover:text-green-400 transition-all duration-200
        ${isOpen ? "text-green-400" : "text-white"}`}
       >
         {title}
