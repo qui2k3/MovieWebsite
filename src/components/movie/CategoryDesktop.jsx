@@ -13,12 +13,7 @@ const CategoryDesktop = ({ data }) => {
     if (title === "Thể loại") {
       navigate(`/the-loai/${slug[index]}`); // ✅ Chuyển hướng theo slug của thể loại
     } else if (title === "Quốc gia") {
-      const countrySlug = genre
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/\s+/g, "-"); // ✅ Tạo slug cho quốc gia
-      navigate(`/quoc-gia/${countrySlug}`); // ✅ Chuyển hướng theo quốc gia
+      navigate(`/quoc-gia/${slug[index]}`); // ✅ Chuyển hướng theo quốc gia
     }
   };
 

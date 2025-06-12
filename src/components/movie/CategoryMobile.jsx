@@ -26,12 +26,7 @@ const CategoryMobile = ({ data, onClose }) => {
         navigate(`/the-loai/khong-xac-dinh`);
       }
     } else if (title === "Quốc gia") {
-      const countrySlug = genre
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-      navigate(`/quoc-gia/${countrySlug}`);
+      navigate(`/quoc-gia/${slug[index]}`);
     }
     setIsOpen(false); // ✅ Đóng dropdown con sau khi chọn mục
     if (onClose) {

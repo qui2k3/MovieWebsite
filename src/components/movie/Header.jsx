@@ -205,7 +205,7 @@ const Header = () => {
                       {isUserMenuOpen && (
                         <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800 text-white rounded-md shadow-lg py-2 z-50 animate-fadeIn">
                           {" "}
-                          <div className="px-4 py-2 text-sm text-gray-300 border-b border-gray-700 truncate">
+                          <div className="px-4 py-2 text-sm text-white border-b border-gray-700 truncate">
                             {user.displayName || user.email || "Người dùng"}
                           </div>
                           <button
@@ -329,7 +329,7 @@ const Header = () => {
           </div>
 
           {/* Các Link và Category cho Mobile */}
-          <ul className="flex flex-col gap-4 text-[18px] text-white fw-black text-shadow overflow-y-auto pb-4">
+          <ul className="flex flex-col gap-4 text-[18px] text-white fw-black overflow-y-auto pb-4">
             {/* Sửa LI cho CategoryMobile (Thể loại) */}
             <li className="pb-4 border-b border-gray-700">
               {" "}
