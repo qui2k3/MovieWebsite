@@ -38,11 +38,8 @@ const MovieDetails = () => {
   };
 
   return (
-    <SkeletonTheme
-      baseColor="rgb(55, 65, 81)"
-      highlightColor="rgb(80, 90, 100)"
-    >
-      <div className="text-red-400 bg-[#010810] max-w-full pt-8">
+    <SkeletonTheme baseColor="#1E1E1E" highlightColor="#333333">
+      <div className="text-white bg-[#010810] max-w-full pt-8 min-h-screen">
         <div className="flex flex-col">
           {loading ? (
             <>
@@ -81,14 +78,14 @@ const MovieDetails = () => {
                     className="w-full aspect-[2/3] h-full object-cover rounded-lg"
                   />
                   <div className="absolute bottom-0 -translate-y-full w-full h-[50px] flex flex-col justify-center items-center text-center text-white leading-4 bg-[#da2511] bg-opacity-60">
-                    <span className="block text-center font-semibold w-full">
+                    <span className="block text-center text-2xl font-semibold w-full">
                       Xem Phim
                     </span>
                   </div>
                 </div>
                 <div className="overflow-hidden max-h-[340px] min-h-[340px]">
-                  <div className="bg-[#222222] text-[#acb5a2] pl-3 h-full overflow-y-scroll">
-                    <h2 className="text-[#f7975a] text-[25px] font-bold">
+                  <div className="bg-[#1E1E1E] text-[#C0C0C0] pl-3 h-full overflow-y-scroll">
+                    <h2 className="text-white text-3xl font-bold">
                       {movieDetail.name}
                     </h2>
                     <p>
@@ -127,11 +124,11 @@ const MovieDetails = () => {
                   </div>
                 </div>
               </div>
-              <div className="bg-[#222222] max-w-2xl w-full mx-auto p-2">
-                <h2 className="underline text-[#c58560] text-lg font-bold">
+              <div className="bg-[#1E1E1E] max-w-2xl w-full mx-auto p-2">
+                <h2 className="underline text-white text-xl font-bold mb-2">
                   Nội dung phim: {movieDetail.name}
                 </h2>
-                <p className="text-sm leading-6 text-[#828282]">
+                <p className="text-base leading-relaxed text-[#A0A0A0]">
                   {movieDetail.content || "Không có mô tả"}
                 </p>
               </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import LazyLoad from "react-lazyload";
 
 const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
   const navigate = useNavigate();
@@ -28,11 +29,26 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
         className="max-h-72 relative group bg-white shadow-md rounded-lg cursor-pointer overflow-hidden"
       >
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            className="w-full aspect-[2/3] h-full object-cover rounded-lg group-hover:scale-125 transition-transform duration-300"
-            alt={movie.name || "poster"}
-          />
+          <LazyLoad
+            height={0}
+            offset={150}
+            once
+            placeholder={
+              <Skeleton
+                width="100%"
+                height="0"
+                style={{ paddingTop: "150%" }}
+                className="rounded-lg"
+              />
+            }
+          >
+            <img
+              src={imageUrl}
+              className="w-full aspect-[2/3] h-full object-cover rounded-lg group-hover:scale-125 transition-transform duration-300"
+              alt={movie.name || "poster"}
+              loading="lazy"
+            />
+          </LazyLoad>
         ) : (
           <Skeleton
             width="100%"
@@ -44,7 +60,7 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
 
         {/* Hiển thị tên phim luôn khi ở mobile hoặc khi showNameOnHover = false */}
         <div
-          className={`absolute p-1 bottom-0 left-0 w-full h-1/5 flex flex-col justify-center text-center text-white leading-4 bg-[#080705] bg-opacity-60 transition-all duration-300 ${
+          className={`absolute p-1 bottom-0 left-0 w-full h-1/5 flex flex-col justify-center text-center text-[#FFFFFF] leading-4 bg-[#080705] bg-opacity-60 transition-all duration-300 ${
             isMobile || !showNameOnHover
               ? "translate-y-0"
               : "transform translate-y-full group-hover:translate-y-0"

@@ -12,12 +12,14 @@ import {
 import {
   getFirestore,
   collection,
-  addDoc,
+  addDoc, // Bạn có thể giữ hoặc bỏ addDoc tùy bạn, nó không dùng nữa cho chức năng này
   serverTimestamp,
   query,
   where,
   getDocs,
-} from "firebase/firestore"; // Thêm Firestore
+  doc, // <--- THÊM DÒNG NÀY
+  setDoc, // <--- THÊM DÒNG NÀY
+} from "firebase/firestore";
 
 // Lưu ý: Bạn có thể bỏ dòng getDatabase nếu không dùng Realtime Database
 // import { getDatabase } from "firebase/database";
@@ -82,23 +84,51 @@ export const onAuthChange = (callback) => {
 };
 
 // Hàm lưu lịch sử xem phim vào Firestore
-export const addWatchHistory = async (movieData) => {
+export const addWatchHistory = async (movieData, episodeInfo = {}) => {
+  // episodeInfo là tham số mới
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
+    // Định nghĩa tham chiếu đến document. ID của document sẽ là slug của phim.
+    // Đường dẫn: users/{userId}/watchHistory/{movieSlug}
+    const movieDocRef = doc(
+      db,
+      "users",
+      userId,
+      "watchHistory",
+      movieData.slug
+    );
+
     try {
-      await addDoc(collection(db, "watchHistory"), {
-        userId: userId,
-        movieId: movieData.id,
-        title: movieData.title,
-        genres: movieData.genres || [], // Đảm bảo là mảng
-        watchedAt: serverTimestamp(),
-      });
-      console.log("Lịch sử xem phim đã được lưu!");
+      await setDoc(
+        movieDocRef, // Tham chiếu document
+        {
+          userId: userId, // Vẫn lưu userId trong document (tốt cho quy tắc bảo mật)
+          movieId: movieData.id,
+          title: movieData.title,
+          genres: movieData.genres || [],
+          poster_url: movieData.poster_url, // Đảm bảo movieData có các trường này
+          thumb_url: movieData.thumb_url, // Đảm bảo movieData có các trường này
+          year: movieData.year, // Đảm bảo movieData có các trường này
+          slug: movieData.slug, // Lưu slug vào document
+
+          watchedAt: serverTimestamp(), // Cập nhật thời gian xem gần nhất
+          lastWatchedEpisodeSlug: episodeInfo.slug || null, // Lưu slug của tập cuối
+          lastWatchedEpisodeName: episodeInfo.name || null, // Lưu tên tập cuối
+        },
+        { merge: true } // QUAN TRỌNG: Cập nhật các trường đã có và thêm các trường mới
+      );
+      console.log(
+        `Firebase: Lịch sử xem phim "${movieData.title}" (tập ${
+          episodeInfo.name || "mới nhất"
+        }) đã được LƯU/CẬP NHẬT vào Firestore!`
+      );
     } catch (e) {
-      console.error("Lỗi khi thêm lịch sử xem phim: ", e);
+      console.error("Firebase: Lỗi khi thêm/cập nhật lịch sử xem phim: ", e);
     }
   } else {
-    console.warn("Người dùng chưa đăng nhập. Không thể lưu lịch sử xem phim.");
+    console.warn(
+      "Firebase: Người dùng chưa đăng nhập. Không thể lưu lịch sử xem phim."
+    );
   }
 };
 
@@ -106,16 +136,32 @@ export const addWatchHistory = async (movieData) => {
 export const getWatchHistory = async () => {
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    const q = query(
-      collection(db, "watchHistory"),
-      where("userId", "==", userId)
+    // Tham chiếu đến subcollection watchHistory của người dùng hiện tại
+    const historyCollectionRef = collection(
+      db,
+      "users",
+      userId,
+      "watchHistory"
     );
-    const querySnapshot = await getDocs(q);
-    const history = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return history;
+
+    try {
+      const querySnapshot = await getDocs(historyCollectionRef);
+      const history = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id, // ID của document sẽ là movieSlug
+          ...doc.data(),
+        }))
+        .sort(
+          (a, b) => (b.watchedAt?.seconds || 0) - (a.watchedAt?.seconds || 0)
+        ); // Sắp xếp theo thời gian xem gần nhất
+      return history;
+    } catch (error) {
+      console.error(
+        "Firebase: Lỗi khi lấy lịch sử xem phim từ Firestore:",
+        error
+      );
+      return [];
+    }
   }
   return [];
 };

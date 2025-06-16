@@ -13,5 +13,34 @@
 .fb_iframe_widget,
 .fb_iframe_widget span,
 .fb_iframe_widget iframe {
-    width: 100% !important; /* Dòng này là chìa khóa để khắc phục lỗi kích thước */
+  width: 100% !important; /* Dòng này là chìa khóa để khắc phục lỗi kích thước */
+}
+
+/* --- Custom Scrollbar Styles --- */
+
+/* Webkit (Chrome, Safari, Opera) */
+::-webkit-scrollbar {
+  width: 8px; /* Chiều rộng của thanh cuộn */
+}
+
+::-webkit-scrollbar-track {
+  background: #141414; /* Màu nền của rãnh cuộn, đồng bộ với nền sidebar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #444444; /* Màu của thanh cuộn */
+  border-radius: 4px; /* Bo góc thanh cuộn */
+  border: 2px solid #141414; /* Viền để làm cho thanh cuộn trông mỏng hơn */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #00bfff; /* Màu khi hover, dùng Electric Blue */
+}
+
+/* Firefox (dùng cho riêng Firefox) */
+/* Lưu ý: Các thuộc tính scrollbar-width và scrollbar-color chỉ hoạt động trong Firefox */
+/* Bạn có thể đặt chúng trên thẻ html hoặc body */
+html {
+  scrollbar-width: thin; /* 'auto' | 'thin' | 'none' */
+  scrollbar-color: #444444 #141414; /* màu_ngón_cái màu_rãnh */
 }

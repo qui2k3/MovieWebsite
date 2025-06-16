@@ -92,7 +92,7 @@ const Home = () => {
 
   const renderMovieSection = (title, movies) => (
     <section className="bg-[#010810] p-5 pt-10">
-      <h2 className="text-[24px] pl-5 pb-5 text-white font-semibold ">
+      <h2 className="text-[24px] pl-5 pb-5 text-[#FFFFFF] font-semibold ">
         {title}
       </h2>
       <Swiper

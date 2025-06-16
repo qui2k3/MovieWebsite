@@ -5,7 +5,7 @@ import Home from "./pages/Home/Home";
 import BrowseMovie from "./pages/BrowseMovie/BrowseMovie";
 import MovieDetails from "./pages/MovieDetail/MovieDetails";
 import WatchMovie from "./pages/Watch/WatchMovie";
-
+import WatchHistoryPage from "./pages/History/WatchHistory";
 const App = () => {
   return (
     <>
@@ -21,6 +21,7 @@ const App = () => {
           path="/xem-phim/:movieSlug/:episodeSlug"
           element={<WatchMovie />}
         />
+        <Route path="/lich-su-xem" element={<WatchHistoryPage />} />
 
         <Route path="/the-loai/:genre" element={<BrowseMovie type="genre" />} />
         <Route

@@ -164,7 +164,7 @@ const Header = () => {
           {/* Input tìm kiếm cho Desktop */}
           <div className="relative ml-5 hidden lg:block">
             <input
-              className="h-10 max-w-[280px] pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
+              className="h-10 max-w-[280px] pl-[40px] outline-none bg-[#2A2A2A] rounded-md text-white"
               placeholder="Tìm kiếm phim"
               value={filter}
               onInput={handleFilterChange}
@@ -196,7 +196,7 @@ const Header = () => {
                     <div className="relative" ref={userMenuRef}>
                       {" "}
                       <img
-                        src={user.photoURL || "/default-avatar.png"}
+                        src={user.photoURL || "/defaultAvatar.png"}
                         alt={user.displayName || "User Avatar"}
                         className="w-10 h-10 rounded-full object-cover cursor-pointer border-2 border-transparent hover:border-blue-400 transition-colors duration-200"
                         onClick={toggleUserMenu}
@@ -317,7 +317,7 @@ const Header = () => {
           {/* Input tìm kiếm trong Mobile Menu (Giữ nguyên) */}
           <div className="relative mb-6">
             <input
-              className="h-10 w-full pl-[40px] outline-none bg-[#5b4a40] rounded-md text-white"
+              className="h-10 w-full pl-[40px] outline-none bg-[#2A2A2A] rounded-md text-white"
               placeholder="Tìm kiếm phim"
               value={filter}
               onInput={handleFilterChange}
