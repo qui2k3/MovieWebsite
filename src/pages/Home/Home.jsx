@@ -11,7 +11,7 @@ import "react-loading-skeleton/dist/skeleton.css"; // Import CSS của skeleton
 const getThelatestMovies = async () => {
   try {
     const response = await axios.get(
-      "https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1"
+      "https://phimapi.com/danh-sach/phim-moi-cap-nhat?page=1&limit=10"
     );
     return response.data.items;
   } catch (error) {
@@ -23,7 +23,7 @@ const getThelatestMovies = async () => {
 const getTheCartoons = async () => {
   try {
     const response = await axios.get(
-      "https://phimapi.com/v1/api/danh-sach/hoat-hinh?page=1&sort_field=_id&sort_type=asc&limit=20"
+      "https://phimapi.com/v1/api/danh-sach/hoat-hinh?page=1&limit=10"
     );
     return response.data.data.items;
   } catch (error) {
@@ -35,7 +35,7 @@ const getTheCartoons = async () => {
 const getTheChinaMovies = async () => {
   try {
     const response = await axios.get(
-      "https://phimapi.com/v1/api/danh-sach/phim-bo?page=1&sort_field=_id&sort_type=asc&country=trung-quoc&limit=10"
+      "https://phimapi.com/v1/api/danh-sach/phim-bo?page=1&country=trung-quoc&limit=10"
     );
     return response.data.data.items;
   } catch (error) {
@@ -47,7 +47,7 @@ const getTheChinaMovies = async () => {
 const getTheKoreanMovies = async () => {
   try {
     const response = await axios.get(
-      "https://phimapi.com/v1/api/danh-sach/phim-bo?page=1&sort_field=_id&sort_type=asc&country=han-quoc&limit=10"
+      "https://phimapi.com/v1/api/danh-sach/phim-bo?page=1&country=han-quoc&limit=10"
     );
     return response.data.data.items;
   } catch (error) {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VideoPlayer from "../../components/movie/VideoPlayer";
 import FacebookComments from "../../components/movie/FacebookComments";
@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { addWatchHistory, auth } from "../../configs/firebaseConfig";
+import RecommendedMovies from "../../components/movie/RecommendedMovies";
 
 const WatchMovie = () => {
   const { movieSlug, episodeSlug } = useParams(); // episodeSlug đã có ở đây
@@ -21,6 +22,11 @@ const WatchMovie = () => {
   const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState(null);
+
+  const sessionStartTimeRef = useRef(null); // Ref để lưu thời gian bắt đầu phiên xem
+  const lastSavedMovieDataRef = useRef(null); // Ref để lưu dữ liệu phim cuối cùng được lưu (cho cleanup)
+  const lastSavedEpisodeInfoRef = useRef(null); // Ref để lưu thông tin tập cuối cùng được lưu (cho cleanup)
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
@@ -33,6 +39,12 @@ const WatchMovie = () => {
   }, []);
 
   useEffect(() => {
+    // Chỉ fetch movie data nếu movieSlug có giá trị
+    if (!movieSlug) {
+      console.log("WatchMovie: movieSlug không có, bỏ qua useEffect tải phim.");
+      return;
+    }
+
     console.log(
       "WatchMovie: useEffect tải phim được kích hoạt cho movieSlug:",
       movieSlug
@@ -50,14 +62,11 @@ const WatchMovie = () => {
         setEpisodeList(episodes);
         setMovieName(movie.name || "");
 
-        // === START: PHẦN SỬA ĐỔI ĐỂ CHỌN TẬP PHIM ĐÚNG ===
+        // Xác định tập phim ban đầu để phát
         let initialEpisodeLink = "";
         let initialEpisodeIndex = 0;
-
         if (episodes.length > 0 && episodes[0]?.server_data?.length > 0) {
           const serverData = episodes[0].server_data;
-
-          // Ưu tiên episodeSlug từ URL params nếu tồn tại
           if (episodeSlug) {
             const foundIndex = serverData.findIndex(
               (ep) => ep.slug === episodeSlug
@@ -67,7 +76,6 @@ const WatchMovie = () => {
               initialEpisodeIndex = foundIndex;
               console.log("WatchMovie: Phát tập từ URL params:", episodeSlug);
             } else {
-              // Nếu không tìm thấy tập theo slug, mặc định phát tập đầu tiên
               initialEpisodeLink = serverData[0].link_embed;
               initialEpisodeIndex = 0;
               console.warn(
@@ -75,7 +83,6 @@ const WatchMovie = () => {
               );
             }
           } else {
-            // Nếu không có episodeSlug trong URL params, phát tập đầu tiên
             initialEpisodeLink = serverData[0].link_embed;
             initialEpisodeIndex = 0;
             console.log(
@@ -83,86 +90,126 @@ const WatchMovie = () => {
             );
           }
         }
-
         setCurentEpisodeSlug(initialEpisodeLink);
         setIndexArrServer_data(initialEpisodeIndex);
-        // === END: PHẦN SỬA ĐỔI ===
 
         setLoading(false);
 
-        // === GỌI addWatchHistory TẠI ĐÂY KHI PHIM ĐƯỢC TẢI THÀNH CÔNG ===
+        // --- MỚI: Ghi nhận thời gian bắt đầu phiên và lưu thông tin phim cho cleanup ---
+        sessionStartTimeRef.current = Date.now(); // Ghi nhận thời gian bắt đầu phiên ngay sau khi phim tải xong
         console.log(
-          "WatchMovie: Kiểm tra điều kiện lưu lịch sử. User:",
-          !!user,
-          "Movie ID:",
-          !!movie._id,
-          "Movie Name:",
-          movie.name
+          "DEBUG: WatchMovie - START SESSION TIME SET:",
+          new Date(sessionStartTimeRef.current).toLocaleString()
         );
 
-        if (user && movie && movie._id) {
-          const genres = movie.category
-            ? movie.category.map((cat) => cat.name)
-            : [];
-          // Lấy thông tin về tập phim đang được xem ban đầu (đã được xác định ở trên)
-          const currentEpisode =
-            episodes[0]?.server_data?.[initialEpisodeIndex];
+        // Lưu thông tin phim và tập hiện tại vào ref để cleanup function có thể truy cập
+        // (Vì movieDetail, episodeList, indexArrServer_data có thể thay đổi sau đó)
+        lastSavedMovieDataRef.current = {
+          id: movie._id,
+          title: movie.name,
+          genres: movie.category ? movie.category.map((cat) => cat.name) : [],
+          slug: movie.slug,
+          poster_url: movie.poster_url,
+          thumb_url: movie.thumb_url,
+          year: movie.year,
+        };
+        lastSavedEpisodeInfoRef.current = {
+          slug: episodes[0]?.server_data?.[initialEpisodeIndex]?.slug || null,
+          name: episodes[0]?.server_data?.[initialEpisodeIndex]?.name || null,
+        };
 
-          console.log(
-            "WatchMovie: Điều kiện lưu lịch sử được đáp ứng. Đang gọi addWatchHistory cho:",
-            movie.name
-          );
-
-          addWatchHistory(
-            {
-              id: movie._id,
-              title: movie.name,
-              genres: genres,
-              slug: movie.slug,
-              poster_url: movie.poster_url,
-              thumb_url: movie.thumb_url,
-              year: movie.year,
-            },
-            {
-              slug: currentEpisode?.slug || null,
-              name: currentEpisode?.name || null,
-            }
-          );
-        } else if (!user) {
-          console.warn(
-            "WatchMovie: Người dùng chưa đăng nhập. Không lưu lịch sử xem phim."
-          );
-        } else if (!movie || !movie._id) {
-          console.warn(
-            "WatchMovie: Dữ liệu phim không hợp lệ (thiếu movie object hoặc _id). Không lưu lịch sử xem phim."
-          );
-        }
+        console.log(
+          "DEBUG: WatchMovie - Dữ liệu phim được gán cho cleanup:",
+          lastSavedMovieDataRef.current?.name,
+          "Tập:",
+          lastSavedEpisodeInfoRef.current?.name
+        );
       })
       .catch((error) => {
         console.error("WatchMovie: Lỗi khi tải chi tiết phim:", error);
         setLoading(false);
       });
-  }, [movieSlug, user, episodeSlug]); // QUAN TRỌNG: Thêm episodeSlug vào dependency array
+
+    // --- Cleanup function (chạy khi component unmount hoặc user thoát trang/tab) ---
+    const handleSaveSessionDuration = async () => {
+      const sessionEndTime = Date.now();
+      const startTime = sessionStartTimeRef.current || 0; // Đảm bảo startTime không phải null
+      const durationSeconds = Math.floor((sessionEndTime - startTime) / 1000);
+
+      const currentMovie = lastSavedMovieDataRef.current;
+      const currentEpisodeInfo = lastSavedEpisodeInfoRef.current;
+      const currentUser = auth.currentUser;
+
+      console.log(
+        `DEBUG: WatchMovie - [CLEANUP] Tính duration: ${durationSeconds}s. Bắt đầu: ${new Date(
+          startTime
+        ).toLocaleString()}. Kết thúc: ${new Date(
+          sessionEndTime
+        ).toLocaleString()}. User: ${!!currentUser}. Movie: ${!!currentMovie?.slug}.`
+      );
+
+      // CHỈ LƯU LỊCH SỬ NẾU THỜI GIAN XEM > 0 GIÂY, CÓ NGƯỜI DÙNG VÀ DỮ LIỆU PHIM HỢP LỆ
+      if (
+        durationSeconds > 0 &&
+        currentMovie &&
+        currentMovie.slug &&
+        currentUser
+      ) {
+        console.log(
+          `DEBUG: WatchMovie - [CLEANUP] Đang gọi addWatchHistory cho ${currentMovie.name} với ${durationSeconds}s.`
+        );
+        await addWatchHistory(
+          currentMovie,
+          currentEpisodeInfo,
+          durationSeconds
+        );
+      } else if (durationSeconds === 0 && currentMovie) {
+        console.warn(
+          `WatchMovie: [CLEANUP] Thời gian xem 0s cho phim ${currentMovie.name}. Không lưu.`
+        );
+      } else if (!currentUser) {
+        console.warn(
+          "WatchMovie: [CLEANUP] Không lưu thời gian xem vì người dùng chưa đăng nhập khi thoát."
+        );
+      } else {
+        console.warn(
+          "WatchMovie: [CLEANUP] Không lưu thời gian xem vì dữ liệu phim chưa hợp lệ khi thoát."
+        );
+      }
+    };
+
+    window.addEventListener("beforeunload", handleSaveSessionDuration);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleSaveSessionDuration);
+      handleSaveSessionDuration(); // Gọi logic lưu khi component unmount
+    };
+  }, [movieSlug, user, episodeSlug]); // Depend on user, movieSlug, episodeSlug để re-run effect và thiết lập listeners
 
   const handleEpisodeClick = (slug, index) => {
-    setIndexArrServer_data(index);
-    navigate(`/xem-phim/${movieSlug}/${slug}`);
+    // LƯU THỜI LƯỢNG CỦA PHIÊN HIỆN TẠI TRƯỚC KHI CHUYỂN TẬP
+    const sessionEndTime = Date.now();
+    const startTime = sessionStartTimeRef.current || 0; // Đảm bảo startTime không phải null
+    const durationSeconds = Math.floor((sessionEndTime - startTime) / 1000);
 
-    // === GỌI addWatchHistory KHI CHUYỂN TẬP ===
-    // Đảm bảo movieDetail đã có dữ liệu trước khi gọi
-    if (user && movieDetail && movieDetail._id) {
+    console.log(
+      `DEBUG: WatchMovie - [EPISODE_CLICK] Tính duration: ${durationSeconds}s. Bắt đầu: ${new Date(
+        startTime
+      ).toLocaleString()}. Kết thúc: ${new Date(
+        sessionEndTime
+      ).toLocaleString()}.`
+    ); // <<< THÊM LOG
+
+    if (durationSeconds > 0 && user && movieDetail && movieDetail.slug) {
       const genres = movieDetail.category
         ? movieDetail.category.map((cat) => cat.name)
         : [];
-      const currentEpisode = episodeList[0]?.server_data?.[index];
+      const currentEpisodePlayed =
+        episodeList[0]?.server_data?.[indexArrServer_data]; // Tập vừa xem xong
 
       console.log(
-        "WatchMovie: Đang lưu lịch sử khi chuyển tập cho:",
-        movieDetail.name,
-        "Tập:",
-        currentEpisode?.name
-      );
-
+        `DEBUG: WatchMovie - [EPISODE_CLICK] Đang gọi addWatchHistory cho ${movieDetail.name} (tập vừa xem) với ${durationSeconds}s.`
+      ); // <<< THÊM LOG TRƯỚC GỌI HÀM
       addWatchHistory(
         {
           id: movieDetail._id,
@@ -174,11 +221,34 @@ const WatchMovie = () => {
           year: movieDetail.year,
         },
         {
-          slug: currentEpisode?.slug || null,
-          name: currentEpisode?.name || null,
-        }
+          slug: currentEpisodePlayed?.slug || null,
+          name: currentEpisodePlayed?.name || null,
+        },
+        durationSeconds
+      );
+    } else if (durationSeconds === 0 && movieDetail) {
+      console.warn(
+        `WatchMovie: [EPISODE_CLICK] Thời gian xem 0s cho phim ${movieDetail.name}. Không lưu.`
+      );
+    } else {
+      console.warn(
+        `WatchMovie: [EPISODE_CLICK] Không lưu thời gian xem vì dữ liệu phim chưa hợp lệ.`
       );
     }
+
+    // RESET THỜI GIAN BẮT ĐẦU PHIÊN CHO TẬP MỚI
+    sessionStartTimeRef.current = Date.now();
+    console.log(
+      "DEBUG: WatchMovie - [EPISODE_CLICK] Reset thời gian bắt đầu phiên mới lúc:",
+      new Date(sessionStartTimeRef.current).toLocaleString()
+    ); // <<< THÊM LOG
+
+    setIndexArrServer_data(index);
+    navigate(`/xem-phim/${movieSlug}/${slug}`);
+
+    // LƯU Ý: Không cần gọi addWatchHistory với 0s cho tập mới ở đây nữa.
+    // Vì cleanup function của useEffect sẽ gọi khi component unmounts/navigates AWAY.
+    // Nếu người dùng ở lại xem tập mới, thời gian đó sẽ được tính trong phiên tiếp theo.
   };
 
   return (
@@ -240,7 +310,7 @@ const WatchMovie = () => {
             </ul>
           )}
         </div>
-
+        <RecommendedMovies />
         <FacebookComments />
       </div>
     </SkeletonTheme>

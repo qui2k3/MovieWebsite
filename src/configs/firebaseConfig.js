@@ -12,13 +12,15 @@ import {
 import {
   getFirestore,
   collection,
-  addDoc, // Bạn có thể giữ hoặc bỏ addDoc tùy bạn, nó không dùng nữa cho chức năng này
+  addDoc,
   serverTimestamp,
   query,
   where,
+  deleteDoc,
   getDocs,
-  doc, // <--- THÊM DÒNG NÀY
-  setDoc, // <--- THÊM DÒNG NÀY
+  doc,
+  setDoc,
+  runTransaction, // <--- THÊM DÒNG NÀY VÀO ĐÂY
 } from "firebase/firestore";
 
 // Lưu ý: Bạn có thể bỏ dòng getDatabase nếu không dùng Realtime Database
@@ -56,6 +58,31 @@ export const signInWithFacebook = async () => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     console.log("Đăng nhập thành công!", user);
+
+    // MỚI: Lưu thông tin người dùng vào Firestore 'users' collection
+    if (user) {
+      // Đảm bảo user object tồn tại
+      const userDocRef = doc(db, "users", user.uid); // Document ID là UID của user
+      await setDoc(
+        userDocRef,
+        {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email, // Email có thể là null nếu Facebook không cung cấp hoặc user từ chối
+          photoURL: user.photoURL,
+          lastLoginAt: serverTimestamp(), // Thời gian đăng nhập gần nhất
+          // creationTime từ user.metadata là string, chuyển sang ISO string hoặc Timestamp
+          createdAt: user.metadata?.creationTime
+            ? new Date(parseInt(user.metadata.creationTime)).toISOString()
+            : null,
+        },
+        { merge: true }
+      ); // Merge: true để cập nhật thông tin nếu user đã tồn tại
+      console.log(
+        `Firebase: Thông tin user '${user.displayName}' đã được lưu vào Firestore.`
+      );
+    }
+
     return user;
   } catch (error) {
     console.error("Lỗi đăng nhập Facebook:", error.code, error.message);
@@ -84,12 +111,13 @@ export const onAuthChange = (callback) => {
 };
 
 // Hàm lưu lịch sử xem phim vào Firestore
-export const addWatchHistory = async (movieData, episodeInfo = {}) => {
-  // episodeInfo là tham số mới
+export const addWatchHistory = async (
+  movieData,
+  episodeInfo = {},
+  sessionDurationSeconds = 0
+) => {
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    // Định nghĩa tham chiếu đến document. ID của document sẽ là slug của phim.
-    // Đường dẫn: users/{userId}/watchHistory/{movieSlug}
     const movieDocRef = doc(
       db,
       "users",
@@ -99,31 +127,57 @@ export const addWatchHistory = async (movieData, episodeInfo = {}) => {
     );
 
     try {
-      await setDoc(
-        movieDocRef, // Tham chiếu document
-        {
-          userId: userId, // Vẫn lưu userId trong document (tốt cho quy tắc bảo mật)
-          movieId: movieData.id,
-          title: movieData.title,
-          genres: movieData.genres || [],
-          poster_url: movieData.poster_url, // Đảm bảo movieData có các trường này
-          thumb_url: movieData.thumb_url, // Đảm bảo movieData có các trường này
-          year: movieData.year, // Đảm bảo movieData có các trường này
-          slug: movieData.slug, // Lưu slug vào document
+      await runTransaction(db, async (transaction) => {
+        const sfDoc = await transaction.get(movieDocRef);
+        let currentTotalDuration = 0;
 
-          watchedAt: serverTimestamp(), // Cập nhật thời gian xem gần nhất
-          lastWatchedEpisodeSlug: episodeInfo.slug || null, // Lưu slug của tập cuối
-          lastWatchedEpisodeName: episodeInfo.name || null, // Lưu tên tập cuối
-        },
-        { merge: true } // QUAN TRỌNG: Cập nhật các trường đã có và thêm các trường mới
-      );
+        if (sfDoc.exists) {
+          // SỬA ĐỔI: Thêm || {} để đảm bảo existingData luôn là một đối tượng
+          const existingData = sfDoc.data() || {}; // <-- THAY ĐỔI DÒNG NÀY
+          currentTotalDuration =
+            existingData.total_watched_duration_seconds || 0;
+        }
+
+        const newTotalDuration = currentTotalDuration + sessionDurationSeconds;
+
+        transaction.set(
+          movieDocRef,
+          {
+            userId: userId,
+            movieId: movieData.id,
+            title: movieData.title,
+            genres: movieData.genres || [],
+            poster_url: movieData.poster_url,
+            thumb_url: movieData.thumb_url,
+            year: movieData.year,
+            slug: movieData.slug,
+
+            watchedAt: serverTimestamp(),
+            lastWatchedEpisodeSlug: episodeInfo.slug || null,
+            lastWatchedEpisodeName: episodeInfo.name || null,
+            total_watched_duration_seconds: newTotalDuration,
+          },
+          { merge: true }
+        );
+      });
+
       console.log(
         `Firebase: Lịch sử xem phim "${movieData.title}" (tập ${
           episodeInfo.name || "mới nhất"
-        }) đã được LƯU/CẬP NHẬT vào Firestore!`
+        }) đã được LƯU/CẬP NHẬT vào Firestore! Xem +${sessionDurationSeconds}s.`
       );
     } catch (e) {
       console.error("Firebase: Lỗi khi thêm/cập nhật lịch sử xem phim: ", e);
+      // Thêm kiểm tra lỗi chi tiết để hiểu rõ hơn
+      if (e.code === "permission-denied") {
+        console.error(
+          "Firebase: Lỗi quyền truy cập. Kiểm tra Firestore Security Rules!"
+        );
+      } else if (e.message && e.message.includes("A document does not exist")) {
+        console.error(
+          "Firebase: Lỗi giao dịch. Document mục tiêu có thể không tồn tại hoặc đã bị xóa giữa chừng."
+        );
+      }
     }
   } else {
     console.warn(
@@ -164,4 +218,22 @@ export const getWatchHistory = async () => {
     }
   }
   return [];
+};
+export const deleteWatchHistoryItem = async (movieSlug, userId) => {
+  if (!auth.currentUser || auth.currentUser.uid !== userId) {
+    console.warn(
+      "Firebase: Không được phép xóa lịch sử xem phim của người dùng khác hoặc chưa đăng nhập."
+    );
+    return false;
+  }
+  const movieDocRef = doc(db, "users", userId, "watchHistory", movieSlug);
+
+  try {
+    await deleteDoc(movieDocRef);
+    console.log(`Firebase: Đã xóa lịch sử xem phim '${movieSlug}' thành công.`);
+    return true;
+  } catch (e) {
+    console.error(`Firebase: Lỗi khi xóa lịch sử xem phim '${movieSlug}': `, e);
+    return false;
+  }
 };
