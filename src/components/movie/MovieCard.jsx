@@ -4,7 +4,12 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import LazyLoad from "react-lazyload";
 
-const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
+const MovieCard = ({
+  movie,
+  thisForUrlImageMovieLastest,
+  thisForUrlImageApiMovieRecommend,
+  showNameOnHover,
+}) => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
@@ -17,7 +22,7 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
   }, []);
 
   const imageUrl = movie.poster_url
-    ? thisForUrlImageMovieLastest
+    ? thisForUrlImageMovieLastest || thisForUrlImageApiMovieRecommend
       ? movie.poster_url
       : `https://phimimg.com/${movie.poster_url}`
     : null;
@@ -70,7 +75,7 @@ const MovieCard = ({ movie, thisForUrlImageMovieLastest, showNameOnHover }) => {
             {movie.name || <Skeleton width="80%" />}
           </h3>
           <span className="block px-1 text-center text-sm font-light whitespace-nowrap overflow-hidden text-ellipsis ">
-            {movie.origin_name || <Skeleton width="60%" />}
+            {movie.origin_name || movie.year || <Skeleton width="60%" />}
           </span>
         </div>
       </div>

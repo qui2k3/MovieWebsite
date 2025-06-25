@@ -4,7 +4,8 @@ import CategoryDesktop from "./CategoryDesktop";
 import CategoryMobile from "./CategoryMobile";
 import { ListLink, categoryProps, countryProps } from "../../contants/menuData";
 import useDebounce from "../hooks/useDebounce";
-
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 // Import các hàm cần thiết từ file cấu hình Firebase của bạn
 import {
   signInWithFacebook,
@@ -191,7 +192,7 @@ const Header = () => {
                 {item.to === "/dang-nhap" ? (
                   // === START: THAY THẾ LINK ĐĂNG NHẬP BẰNG AVATAR/DROPDOWN (DESKTOP) ===
                   loadingAuth ? (
-                    <span className="text-white">Đang tải...</span>
+                    <Skeleton circle={true} width="38px" height="38px" />
                   ) : user ? (
                     <div className="relative" ref={userMenuRef}>
                       {" "}

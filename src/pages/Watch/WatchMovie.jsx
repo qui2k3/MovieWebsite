@@ -310,8 +310,8 @@ const WatchMovie = () => {
             </ul>
           )}
         </div>
-        <RecommendedMovies />
         <FacebookComments />
+        <RecommendedMovies />
       </div>
     </SkeletonTheme>
   );
