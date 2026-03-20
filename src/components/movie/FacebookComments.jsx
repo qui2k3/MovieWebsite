@@ -79,11 +79,7 @@ const FacebookComments = ({ movieSlug }) => {
             KHÔNG dùng h-0 để tránh lỗi SDK không render được chiều cao.
             Dùng opacity-0 để nó load ngầm bên dưới lớp Skeleton. */}
         <div
-          className={`fb-comments transition-opacity duration-700 w-full ${
-            isLoading
-              ? "opacity-0 invisible absolute"
-              : "opacity-100 visible relative"
-          }`}
+          className={`fb-comments transition-opacity duration-700 w-full opacity-100 visible relative`}
           data-href={currentURL}
           data-width="100%"
           data-numposts="5"
