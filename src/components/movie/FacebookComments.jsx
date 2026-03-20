@@ -49,7 +49,7 @@ const FacebookComments = () => {
           <span className="w-2 h-6 bg-blue-500 rounded-full"></span>
           Bình luận phim
         </h3>
-        <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold text-gray-500">
+        <span className="text-xs uppercase tracking-widest font-semibold text-gray-500">
           Facebook Plugin
         </span>
       </div>
