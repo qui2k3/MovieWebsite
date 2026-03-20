@@ -5,40 +5,43 @@ const FacebookComments = () => {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1. Cấu hình URL cố định (Thay bằng link Vercel thực tế của bạn)
-  const productionURL = "https://movie-website-three-tau.vercel.app";
-  const currentURL = `${productionURL}${location.pathname}`;
+  // Tự động lấy URL hiện tại, khớp 100% với trình duyệt
+  const currentURL = `${window.location.origin}${location.pathname}`;
 
   useEffect(() => {
-    // Mỗi khi URL thay đổi (chuyển phim), hiện lại Loading
     setIsLoading(true);
 
     const parseFB = () => {
-      if (window.FB) {
+      // Kiểm tra cả SDK và thẻ div đã render chưa
+      const fbDiv = document.getElementsByClassName("fb-comments")[0];
+
+      if (window.FB && fbDiv) {
         try {
-          // Xóa các plugin cũ để tránh bị trùng lặp
+          // Gán lại href mới cho thẻ div trước khi parse
+          fbDiv.setAttribute("data-href", currentURL);
+
           window.FB.XFBML.parse();
 
-          // Giả lập thời gian tải để hiệu ứng Loading mượt mà hơn
+          // Đợi Facebook render xong iframe rồi mới tắt loading
           setTimeout(() => {
             setIsLoading(false);
-          }, 1000);
+          }, 1500);
         } catch (err) {
-          console.error("Facebook SDK Parse Error:", err);
+          console.error("FB Parse Error:", err);
           setIsLoading(false);
         }
       } else {
-        // Nếu SDK chưa sẵn sàng, thử lại sau 1 giây
-        setTimeout(parseFB, 1000);
+        // Thử lại sau mỗi 500ms thay vì 1s để nhanh hơn
+        setTimeout(parseFB, 500);
       }
     };
 
     parseFB();
-  }, [location.pathname]);
+  }, [location.pathname, currentURL]);
 
   return (
     <div
-      key={currentURL} // Rất quan trọng: Buộc React render lại hoàn toàn khi đổi phim
+      key={location.pathname} // Dùng pathname làm key để reset component
       className="p-4 bg-gray-900 shadow-xl rounded-xl mt-8 border border-gray-800"
     >
       <div className="flex items-center justify-between mb-6 border-b border-gray-700 pb-3">
@@ -46,12 +49,11 @@ const FacebookComments = () => {
           <span className="w-2 h-6 bg-blue-500 rounded-full"></span>
           Bình luận phim
         </h3>
-        <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">
+        <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold text-gray-500">
           Facebook Plugin
         </span>
       </div>
 
-      {/* --- PHẦN LOADING SKELETON --- */}
       {isLoading && (
         <div className="space-y-4 animate-pulse p-4">
           <div className="flex items-center space-x-3">
@@ -62,16 +64,12 @@ const FacebookComments = () => {
             </div>
           </div>
           <div className="h-20 bg-gray-700 rounded-lg w-full"></div>
-          <div className="flex justify-end pt-2">
-            <div className="h-8 bg-gray-700 rounded w-24"></div>
-          </div>
         </div>
       )}
 
-      {/* --- KHUNG BÌNH LUẬN FACEBOOK --- */}
       <div
-        className={`bg-white p-3 rounded-lg overflow-hidden transition-all duration-700 transform ${
-          isLoading ? "opacity-0 scale-95 h-0" : "opacity-100 scale-100 h-auto"
+        className={`bg-white p-3 rounded-lg transition-all duration-700 ${
+          isLoading ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-auto"
         }`}
       >
         <div
@@ -80,7 +78,6 @@ const FacebookComments = () => {
           data-width="100%"
           data-numposts="5"
           data-colorscheme="light"
-          data-order-by="reverse_time"
         ></div>
       </div>
     </div>
