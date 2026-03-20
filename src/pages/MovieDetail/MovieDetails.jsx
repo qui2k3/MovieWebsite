@@ -4,6 +4,8 @@ import axios from "axios";
 import VideoPlayer from "../../components/movie/VideoPlayer";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+// --- THÊM HELMET CHO SEO ---
+import { Helmet } from "react-helmet-async";
 
 const MovieDetails = () => {
   const { movieSlug } = useParams();
@@ -20,7 +22,7 @@ const MovieDetails = () => {
         setMovieDetail(response.data.movie || {});
         setEpisodeList(response.data.episodes || []);
         setEpisodeSlug(
-          response.data.episodes?.[0]?.server_data?.[0]?.slug || ""
+          response.data.episodes?.[0]?.server_data?.[0]?.slug || "",
         );
         setLoading(false);
       })
@@ -39,6 +41,27 @@ const MovieDetails = () => {
 
   return (
     <SkeletonTheme baseColor="#1E1E1E" highlightColor="#333333">
+      {/* --- PHẦN SEO HELMET (CHỈ THÊM PHẦN NÀY) --- */}
+      {!loading && movieDetail.name && (
+        <Helmet>
+          <title>{movieDetail.name} - Chi tiết phim</title>
+          <meta
+            property="og:title"
+            content={`${movieDetail.name} - Xem ngay tại Phim Hay`}
+          />
+          <meta
+            property="og:description"
+            content={
+              movieDetail.content?.substring(0, 150) ||
+              "Thông tin chi tiết phim."
+            }
+          />
+          <meta property="og:image" content={movieDetail.poster_url} />
+          <meta property="og:url" content={window.location.href} />
+          <meta property="og:type" content="video.movie" />
+        </Helmet>
+      )}
+
       <div className="text-white bg-[#010810] max-w-full pt-8 min-h-screen">
         <div className="flex flex-col">
           {loading ? (
@@ -75,6 +98,7 @@ const MovieDetails = () => {
                 >
                   <img
                     src={movieDetail.poster_url}
+                    alt={movieDetail.name}
                     className="w-full aspect-[2/3] h-full object-cover rounded-lg"
                   />
                   <div className="absolute bottom-0 -translate-y-full w-full h-[50px] flex flex-col justify-center items-center text-center text-white leading-4 bg-[#da2511] bg-opacity-60">
