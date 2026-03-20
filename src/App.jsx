@@ -6,6 +6,8 @@ import BrowseMovie from "./pages/BrowseMovie/BrowseMovie";
 import MovieDetails from "./pages/MovieDetail/MovieDetails";
 import WatchMovie from "./pages/Watch/WatchMovie";
 import WatchHistoryPage from "./pages/History/WatchHistory";
+import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
+
 const App = () => {
   return (
     <>
@@ -28,6 +30,7 @@ const App = () => {
           path="/quoc-gia/:country"
           element={<BrowseMovie type="country" />}
         />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         <Route path="/phim-bo" element={<BrowseMovie type="phim-bo" />} />
         <Route path="/phim-le" element={<BrowseMovie type="phim-le" />} />
