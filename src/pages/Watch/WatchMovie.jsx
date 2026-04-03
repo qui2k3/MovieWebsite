@@ -32,7 +32,7 @@ const WatchMovie = () => {
       setUser(currentUser);
       console.log(
         "WatchMovie: Trạng thái người dùng đã thay đổi:",
-        currentUser ? currentUser.displayName : "Chưa đăng nhập"
+        currentUser ? currentUser.displayName : "Chưa đăng nhập",
       );
     });
     return () => unsubscribe();
@@ -47,7 +47,7 @@ const WatchMovie = () => {
 
     console.log(
       "WatchMovie: useEffect tải phim được kích hoạt cho movieSlug:",
-      movieSlug
+      movieSlug,
     );
 
     axios
@@ -69,7 +69,7 @@ const WatchMovie = () => {
           const serverData = episodes[0].server_data;
           if (episodeSlug) {
             const foundIndex = serverData.findIndex(
-              (ep) => ep.slug === episodeSlug
+              (ep) => ep.slug === episodeSlug,
             );
             if (foundIndex !== -1) {
               initialEpisodeLink = serverData[foundIndex].link_embed;
@@ -79,14 +79,14 @@ const WatchMovie = () => {
               initialEpisodeLink = serverData[0].link_embed;
               initialEpisodeIndex = 0;
               console.warn(
-                "WatchMovie: Không tìm thấy tập theo slug từ URL params. Phát tập đầu tiên."
+                "WatchMovie: Không tìm thấy tập theo slug từ URL params. Phát tập đầu tiên.",
               );
             }
           } else {
             initialEpisodeLink = serverData[0].link_embed;
             initialEpisodeIndex = 0;
             console.log(
-              "WatchMovie: Phát tập đầu tiên (không có episodeSlug từ URL)."
+              "WatchMovie: Phát tập đầu tiên (không có episodeSlug từ URL).",
             );
           }
         }
@@ -99,7 +99,7 @@ const WatchMovie = () => {
         sessionStartTimeRef.current = Date.now(); // Ghi nhận thời gian bắt đầu phiên ngay sau khi phim tải xong
         console.log(
           "DEBUG: WatchMovie - START SESSION TIME SET:",
-          new Date(sessionStartTimeRef.current).toLocaleString()
+          new Date(sessionStartTimeRef.current).toLocaleString(),
         );
 
         // Lưu thông tin phim và tập hiện tại vào ref để cleanup function có thể truy cập
@@ -122,7 +122,7 @@ const WatchMovie = () => {
           "DEBUG: WatchMovie - Dữ liệu phim được gán cho cleanup:",
           lastSavedMovieDataRef.current?.name,
           "Tập:",
-          lastSavedEpisodeInfoRef.current?.name
+          lastSavedEpisodeInfoRef.current?.name,
         );
       })
       .catch((error) => {
@@ -142,10 +142,10 @@ const WatchMovie = () => {
 
       console.log(
         `DEBUG: WatchMovie - [CLEANUP] Tính duration: ${durationSeconds}s. Bắt đầu: ${new Date(
-          startTime
+          startTime,
         ).toLocaleString()}. Kết thúc: ${new Date(
-          sessionEndTime
-        ).toLocaleString()}. User: ${!!currentUser}. Movie: ${!!currentMovie?.slug}.`
+          sessionEndTime,
+        ).toLocaleString()}. User: ${!!currentUser}. Movie: ${!!currentMovie?.slug}.`,
       );
 
       // CHỈ LƯU LỊCH SỬ NẾU THỜI GIAN XEM > 0 GIÂY, CÓ NGƯỜI DÙNG VÀ DỮ LIỆU PHIM HỢP LỆ
@@ -156,24 +156,24 @@ const WatchMovie = () => {
         currentUser
       ) {
         console.log(
-          `DEBUG: WatchMovie - [CLEANUP] Đang gọi addWatchHistory cho ${currentMovie.name} với ${durationSeconds}s.`
+          `DEBUG: WatchMovie - [CLEANUP] Đang gọi addWatchHistory cho ${currentMovie.name} với ${durationSeconds}s.`,
         );
         await addWatchHistory(
           currentMovie,
           currentEpisodeInfo,
-          durationSeconds
+          durationSeconds,
         );
       } else if (durationSeconds === 0 && currentMovie) {
         console.warn(
-          `WatchMovie: [CLEANUP] Thời gian xem 0s cho phim ${currentMovie.name}. Không lưu.`
+          `WatchMovie: [CLEANUP] Thời gian xem 0s cho phim ${currentMovie.name}. Không lưu.`,
         );
       } else if (!currentUser) {
         console.warn(
-          "WatchMovie: [CLEANUP] Không lưu thời gian xem vì người dùng chưa đăng nhập khi thoát."
+          "WatchMovie: [CLEANUP] Không lưu thời gian xem vì người dùng chưa đăng nhập khi thoát.",
         );
       } else {
         console.warn(
-          "WatchMovie: [CLEANUP] Không lưu thời gian xem vì dữ liệu phim chưa hợp lệ khi thoát."
+          "WatchMovie: [CLEANUP] Không lưu thời gian xem vì dữ liệu phim chưa hợp lệ khi thoát.",
         );
       }
     };
@@ -194,10 +194,10 @@ const WatchMovie = () => {
 
     console.log(
       `DEBUG: WatchMovie - [EPISODE_CLICK] Tính duration: ${durationSeconds}s. Bắt đầu: ${new Date(
-        startTime
+        startTime,
       ).toLocaleString()}. Kết thúc: ${new Date(
-        sessionEndTime
-      ).toLocaleString()}.`
+        sessionEndTime,
+      ).toLocaleString()}.`,
     ); // <<< THÊM LOG
 
     if (durationSeconds > 0 && user && movieDetail && movieDetail.slug) {
@@ -208,7 +208,7 @@ const WatchMovie = () => {
         episodeList[0]?.server_data?.[indexArrServer_data]; // Tập vừa xem xong
 
       console.log(
-        `DEBUG: WatchMovie - [EPISODE_CLICK] Đang gọi addWatchHistory cho ${movieDetail.name} (tập vừa xem) với ${durationSeconds}s.`
+        `DEBUG: WatchMovie - [EPISODE_CLICK] Đang gọi addWatchHistory cho ${movieDetail.name} (tập vừa xem) với ${durationSeconds}s.`,
       ); // <<< THÊM LOG TRƯỚC GỌI HÀM
       addWatchHistory(
         {
@@ -224,15 +224,15 @@ const WatchMovie = () => {
           slug: currentEpisodePlayed?.slug || null,
           name: currentEpisodePlayed?.name || null,
         },
-        durationSeconds
+        durationSeconds,
       );
     } else if (durationSeconds === 0 && movieDetail) {
       console.warn(
-        `WatchMovie: [EPISODE_CLICK] Thời gian xem 0s cho phim ${movieDetail.name}. Không lưu.`
+        `WatchMovie: [EPISODE_CLICK] Thời gian xem 0s cho phim ${movieDetail.name}. Không lưu.`,
       );
     } else {
       console.warn(
-        `WatchMovie: [EPISODE_CLICK] Không lưu thời gian xem vì dữ liệu phim chưa hợp lệ.`
+        `WatchMovie: [EPISODE_CLICK] Không lưu thời gian xem vì dữ liệu phim chưa hợp lệ.`,
       );
     }
 
@@ -240,7 +240,7 @@ const WatchMovie = () => {
     sessionStartTimeRef.current = Date.now();
     console.log(
       "DEBUG: WatchMovie - [EPISODE_CLICK] Reset thời gian bắt đầu phiên mới lúc:",
-      new Date(sessionStartTimeRef.current).toLocaleString()
+      new Date(sessionStartTimeRef.current).toLocaleString(),
     ); // <<< THÊM LOG
 
     setIndexArrServer_data(index);
